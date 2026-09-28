@@ -94,7 +94,7 @@
     })
       .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, body: j }; }, function(){ return { ok: r.ok, body: {} }; }); })
       .then(function(res){
-        if(!res.ok){ throw new Error('send failed'); }
+        if(!res.ok || String(res.body && res.body.success) !== 'true'){ throw new Error('send failed'); }
         setStatus('Thanks, ' + (form.name.value.split(' ')[0] || 'there') + ' — your message has been sent. We’ll be in touch within one business day.', 'ok');
         form.reset();
       })

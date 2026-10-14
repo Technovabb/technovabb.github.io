@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>Owner overview — BimTix</title>
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Owner dashboard · design preview with sample data</div>
+
+<div class="dash">
+  <nav class="dash-side" aria-label="Owner menu">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix" width="125" height="62"></a>
+    <span class="side-label">Owner</span>
+    <a class="side-item is-active" href="owner.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#grid"></use></svg>Overview</a>
+    <a class="side-item" href="owner-approvals.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#shield"></use></svg>Approvals<span class="count-badge" data-owner-count hidden>0</span></a>
+    <a class="side-item" href="owner-payouts.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#bank"></use></svg>Payouts</a>
+    <a class="side-item" href="owner-events.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#calendar"></use></svg>All events</a>
+    <span class="side-divider" aria-hidden="true"></span>
+    <a class="side-item" href="promoter.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#chart"></use></svg>Promoter view</a>
+    <a class="side-item" href="index.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#home"></use></svg>Back to site</a>
+    <button type="button" class="side-item" data-owner-reset><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#settings"></use></svg>Reset sample data</button>
+  </nav>
+
+  <main id="main" class="dash-main" data-owner-overview>
+    <div class="dash-title">
+      <div>
+        <h1 data-owner-hello>Hello, Juwan</h1>
+        <span class="muted">Everything across BimTix, all promoters and events</span>
+      </div>
+      <a class="btn btn-gold" href="owner-approvals.html">Review approvals</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="muted">Ticket sales · all events</span>
+        <div class="stat-value" data-k-sales>BBD $0</div>
+        <span class="small muted" data-k-sold></span>
+      </div>
+      <div class="stat">
+        <span class="muted">BimTix keeps (est.)</span>
+        <div class="stat-value" data-k-keep>BBD $0</div>
+        <span class="small muted">Service fees minus card processing</span>
+      </div>
+      <div class="stat">
+        <span class="muted">Owed to promoters</span>
+        <div class="stat-value" data-k-owed>BBD $0</div>
+        <span class="small muted">Not paid out yet</span>
+      </div>
+      <a class="stat stat-blue" href="owner-approvals.html" style="text-decoration: none; color: var(--sand)">
+        <span>Needs your approval</span>
+        <div class="stat-value"><span data-k-queue>0</span> <small style="color: var(--sand)" data-k-queue-label>items need you</small></div>
+        <span class="small">Open approvals →</span>
+      </a>
+    </div>
+
+    <div class="dash-row">
+      <section class="panel panel-gold wide stack" aria-labelledby="att-title" style="gap: 12px">
+        <div class="row"><h2 id="att-title">Needs your attention</h2><a class="link-arrow" href="owner-approvals.html">All approvals<svg class="i i-sm" aria-hidden="true"><use href="assets/img/icons.svg#arrow-right"></use></svg></a></div>
+        <div class="attention" data-attention></div>
+      </section>
+      <section class="panel panel-gold stack" aria-labelledby="pay-title" style="gap: 8px">
+        <div class="row"><h2 id="pay-title">Next payouts</h2><a class="link-arrow" href="owner-payouts.html">All payouts<svg class="i i-sm" aria-hidden="true"><use href="assets/img/icons.svg#arrow-right"></use></svg></a></div>
+        <div class="payout-list" data-upcoming-payouts></div>
+      </section>
+    </div>
+
+    <section class="panel panel-gold stack" aria-labelledby="live-title" style="gap: 14px">
+      <div class="row"><h2 id="live-title">Live events · tickets sold</h2><a class="link-arrow" href="owner-events.html">All events<svg class="i i-sm" aria-hidden="true"><use href="assets/img/icons.svg#arrow-right"></use></svg></a></div>
+      <div class="stack" style="gap: 14px" data-live-events></div>
+    </section>
+  </main>
+</div>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/app.js?v=3"></script>
+<script src="assets/js/owner.js?v=3"></script>
+</body>
+</html>

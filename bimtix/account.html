@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>My account — BimTix</title>
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Design preview · sample account</div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix — events, tickets, experiences" width="125" height="62"></a>
+    <nav class="nav" id="site-nav" aria-label="Main" data-nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Events</a>
+      <a href="rewards.html">Rewards</a>
+      <a href="promoters.html">For promoters</a>
+    </nav>
+    <div class="header-actions">
+      <a class="signin-link" href="account.html" aria-current="page" aria-label="My account"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#user"></use></svg><span>Kerry</span></a>
+      <a class="btn btn-outline" href="events.html">Get tickets</a>
+      <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu" data-nav-toggle><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#menu"></use></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="app" data-account>
+  <div class="account-head">
+    <span class="avatar" aria-hidden="true">KB</span>
+    <div style="flex: 1 1 auto"><h1>Hi, Kerry</h1><span class="muted small">Member since 2026</span></div>
+  </div>
+
+  <section class="points-card" aria-label="BimTix Rewards">
+    <div class="row"><span class="label">BimTix Rewards</span><span class="tier-badge">Gold</span></div>
+    <div class="points-value">1,250 <small>points</small></div>
+    <div class="progress" aria-hidden="true"><span style="width: 62%"></span></div>
+    <div class="row small" style="margin-top: 8px"><span>750 points to Platinum</span><button type="button" class="link-btn" style="color: var(--sand); min-height: 32px" data-demo="1 point for every BBD $1. 1,000 points = BBD $10 off. (Sample rules.)">How it works</button></div>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="My tickets" data-tablist>
+    <button type="button" class="tab" role="tab" id="tab-upcoming" aria-controls="acct-panel" aria-selected="true" data-tab="upcoming">Upcoming (<span data-count-upcoming>2</span>)</button>
+    <button type="button" class="tab" role="tab" id="tab-past" aria-controls="acct-panel" aria-selected="false" tabindex="-1" data-tab="past">Past (<span data-count-past>2</span>)</button>
+  </div>
+  <div class="stack" id="acct-panel" role="tabpanel" aria-labelledby="tab-upcoming" data-acct-panel>
+    <div class="stack" data-acct-list></div>
+  </div>
+
+  <section class="stack" aria-labelledby="saved-title">
+    <h2 class="section-title" id="saved-title">Saved events</h2>
+    <div class="chips" data-acct-saved></div>
+  </section>
+
+  <section class="stack" aria-labelledby="settings-title">
+    <h2 class="section-title" id="settings-title">Settings</h2>
+    <div class="settings">
+      <button type="button" data-demo="Saved cards come with the payment provider."><span>Payment methods</span><span class="val">Card ending 4417</span></button>
+      <button type="button" data-demo="Choose WhatsApp, email or both (full build)."><span>Ticket delivery</span><span class="val">WhatsApp + email</span></button>
+      <button type="button" data-demo="Event reminders and new-event alerts (full build)."><span>Notifications</span><span class="val">On</span></button>
+      <button type="button" data-demo="Help and refunds page comes with the full build."><span>Help &amp; refunds</span><span class="val"></span></button>
+    </div>
+    <a class="btn btn-ghost" href="index.html">Sign out</a>
+  </section>
+</main>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/app.js?v=3"></script>
+</body>
+</html>

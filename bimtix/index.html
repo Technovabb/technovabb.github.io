@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>BimTix — Events, tickets, experiences</title>
+<meta name="description" content="BimTix: tickets for the best events in Barbados and the Caribbean, kept on your phone.">
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Design preview · sample events and prices · nothing is on sale yet</div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix — events, tickets, experiences" width="125" height="62"></a>
+    <nav class="nav" id="site-nav" aria-label="Main" data-nav>
+      <a href="index.html" aria-current="page">Home</a>
+      <a href="events.html">Events</a>
+      <a href="rewards.html">Rewards</a>
+      <a href="promoters.html">For promoters</a>
+    </nav>
+    <div class="header-actions">
+      <a class="signin-link" href="signin.html" aria-label="Sign in"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#user"></use></svg><span>Sign in</span></a>
+      <a class="btn btn-outline" href="events.html">Get tickets</a>
+      <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu" data-nav-toggle><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#menu"></use></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Barbados · Caribbean events · One platform</p>
+        <h1>More than tickets.<br><span class="gold">It’s a lifestyle.</span></h1>
+        <p class="lede">Discover the best events in Barbados and across the Caribbean. Get your tickets in seconds, keep them on your phone, and be part of unforgettable experiences.</p>
+        <form class="search" role="search" action="events.html" method="get">
+          <label class="sr-only" for="q">Search events</label>
+          <input id="q" name="q" type="search" placeholder="Search events or places" autocomplete="off">
+          <label class="sr-only" for="where">Location</label>
+          <select id="where" name="where">
+            <option value="all">All locations</option>
+            <option value="bridgetown">Bridgetown</option>
+            <option value="west">West Coast &amp; St James</option>
+          </select>
+          <label class="sr-only" for="when">Date</label>
+          <select id="when" name="when">
+            <option value="all">Any date</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+          </select>
+          <button class="btn btn-gold" type="submit">Search</button>
+        </form>
+      </div>
+
+      <article class="featured" aria-labelledby="featured-title">
+        <div class="photo-slot">
+          <img class="mark" src="assets/img/bimtix-icon.png" alt="">
+          <span class="photo-label">Photo · crowd at night</span>
+          <div class="date-badge"><span class="m">DEC</span><span class="d">24</span><span class="y">2026</span></div>
+          <button type="button" class="save-btn" data-save="awaken" aria-pressed="false" aria-label="Save Awaken"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#heart"></use></svg></button>
+        </div>
+        <div class="featured-body">
+          <span class="kicker">Featured</span>
+          <h2 id="featured-title">Awaken</h2>
+          <p class="muted">The Christmas Eve Experience · Bridgetown, Barbados</p>
+          <p class="tags">Soca  |  Premium  |  Open bar</p>
+          <a class="btn btn-gold" href="event.html?id=awaken">Get tickets<span class="sr-only"> for Awaken</span></a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <nav class="cat-links" aria-label="Browse events by type">
+      <a class="cat" href="events.html?cat=music"><span class="cat-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#music"></use></svg></span>Music</a>
+      <a class="cat" href="events.html?cat=carnival"><span class="cat-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#mask"></use></svg></span>Carnival</a>
+      <a class="cat" href="events.html?cat=vip"><span class="cat-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#vip"></use></svg></span>VIP</a>
+      <a class="cat" href="events.html?cat=yacht"><span class="cat-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#yacht"></use></svg></span>Yacht</a>
+    </nav>
+
+    <section class="section" aria-labelledby="coming-title">
+      <div class="section-head">
+        <h2 id="coming-title">Coming up</h2>
+        <span class="rule" aria-hidden="true"></span>
+        <a class="link-arrow" href="events.html">View all events<svg class="i i-sm" aria-hidden="true"><use href="assets/img/icons.svg#arrow-right"></use></svg></a>
+      </div>
+      <div class="event-grid" data-event-teaser data-limit="3">
+        <noscript><p class="empty-state">Turn on JavaScript to see events, or <a href="events.html">open the events page</a>.</p></noscript>
+      </div>
+    </section>
+
+    <div class="teasers">
+      <section class="teaser teaser-blue" aria-labelledby="rewards-teaser">
+        <p class="eyebrow">BimTix Rewards</p>
+        <h2 id="rewards-teaser">Your tickets earn you more.</h2>
+        <p>Earn points every time you buy. Use them for money off, early access and VIP upgrades.</p>
+        <a class="btn btn-gold" href="rewards.html">How Rewards work</a>
+      </section>
+      <section class="teaser teaser-gold" aria-labelledby="promo-teaser">
+        <p class="eyebrow">For promoters</p>
+        <h2 id="promo-teaser">Selling an event? Sell it on BimTix.</h2>
+        <p>Live sales, phone scanning at the gate, buy limits and quick payouts.</p>
+        <a class="btn btn-dark" href="promoters.html">Sell with BimTix</a>
+      </section>
+    </div>
+  </div>
+
+  <section class="band" aria-label="Why BimTix">
+    <div class="wrap why">
+      <div class="why-item">
+        <span class="why-icon"><svg class="i i-lg" aria-hidden="true"><use href="assets/img/icons.svg#phone"></use></svg></span>
+        <h3>Tickets on your phone</h3>
+        <p>Your QR ticket lives in your account, your wallet and on WhatsApp. Nothing to print.</p>
+      </div>
+      <div class="why-item">
+        <span class="why-icon"><svg class="i i-lg" aria-hidden="true"><use href="assets/img/icons.svg#send"></use></svg></span>
+        <h3>Send to a friend</h3>
+        <p>Bought for the group? Pass each ticket on in a tap.</p>
+      </div>
+      <div class="why-item">
+        <span class="why-icon"><svg class="i i-lg" aria-hidden="true"><use href="assets/img/icons.svg#card"></use></svg></span>
+        <h3>Pay the easy way</h3>
+        <p>Debit or credit card, with the full total shown before you pay.</p>
+      </div>
+      <div class="why-item">
+        <span class="why-icon"><svg class="i i-lg" aria-hidden="true"><use href="assets/img/icons.svg#shield"></use></svg></span>
+        <h3>Real tickets only</h3>
+        <p>Every ticket is checked at the gate, and buy limits keep scalpers out.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand"><img src="assets/img/bimtix-logo.png" alt="BimTix" width="125" height="62"><span>A Tech Nova company · Barbados · © <span data-year>2026</span></span></div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="events.html">Events</a>
+      <a href="rewards.html">Rewards</a>
+      <a href="promoters.html">For promoters</a>
+      <a href="promoter.html">Promoter dashboard</a>
+      <a href="owner.html">Owner dashboard</a>
+      <a href="signin.html">Sign in</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/app.js?v=3"></script>
+</body>
+</html>

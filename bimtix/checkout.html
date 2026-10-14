@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>Checkout — BimTix</title>
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Design preview · no payment is taken · nothing is on sale yet</div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix — events, tickets, experiences" width="125" height="62"></a>
+    <span class="row muted small"><svg class="i i-sm" aria-hidden="true"><use href="assets/img/icons.svg#lock"></use></svg>Secure checkout</span>
+  </div>
+</header>
+
+<main id="main" class="app" data-checkout>
+  <a class="back" href="event.html" data-co-back><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#arrow-left"></use></svg>Back to tickets</a>
+  <h1 class="page-title">Checkout</h1>
+
+  <div class="panel panel-gold member-strip">
+    <span class="avatar" aria-hidden="true">KB</span>
+    <div style="flex: 1 1 auto"><strong>Kerry B.</strong><br><span class="muted small">Gold member · 1,250 points</span></div>
+    <a class="gold small" href="signin.html">Not you?</a>
+  </div>
+
+  <section class="panel" aria-label="Your order">
+    <div class="row"><strong style="font-family: var(--font-head); font-size: 18px" data-co-title>Island Riddim</strong><span class="muted small" data-co-date></span></div>
+    <div class="stack" style="margin-top: 8px; gap: 4px" data-co-lines></div>
+  </section>
+
+  <form class="stack" style="gap: 16px" data-co-form>
+    <fieldset class="panel">
+      <legend>Send my tickets to</legend>
+      <label class="check-row"><input type="checkbox" checked data-co-wa><span>WhatsApp · +1 (246) [your number]</span></label>
+      <label class="check-row"><input type="checkbox" checked data-co-email><span>Email · [your email]</span></label>
+      <span class="muted small">They’re always in your BimTix account too.</span>
+    </fieldset>
+
+    <fieldset class="panel">
+      <legend>Pay with</legend>
+      <label class="pay-option"><input type="radio" name="pay" value="card" checked><span>Debit or credit card</span><span class="hint">Visa · Mastercard</span></label>
+      <label class="pay-option"><input type="radio" name="pay" value="apple"><span>Apple Pay</span></label>
+      <label class="pay-option"><input type="radio" name="pay" value="google"><span>Google Pay</span></label>
+    </fieldset>
+
+    <label class="points-toggle">
+      <input type="checkbox" checked data-co-usepoints>
+      <span><strong data-co-points-label>Use 1,000 points</strong><br><span class="small" data-co-points-save></span></span>
+    </label>
+
+    <section class="panel panel-gold totals" aria-label="Total">
+      <div class="row"><span>Tickets</span><span data-co-sub></span></div>
+      <div class="row"><span>Service fee</span><span data-co-fee></span></div>
+      <div class="row" data-co-discount-row><span>Points</span><span data-co-discount></span></div>
+      <div class="row grand"><span>Total</span><span data-co-total></span></div>
+    </section>
+
+    <button class="btn btn-gold btn-block" type="submit" style="min-height: 56px; font-size: 17px" data-co-pay>Pay</button>
+    <p class="demo-note">Preview only — no money is taken. Payments will go through [payment provider]; BimTix never stores your card.</p>
+  </form>
+</main>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/app.js?v=3"></script>
+</body>
+</html>

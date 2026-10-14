@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>All events — BimTix owner</title>
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Owner dashboard · design preview with sample data</div>
+
+<div class="dash">
+  <nav class="dash-side" aria-label="Owner menu">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix" width="125" height="62"></a>
+    <span class="side-label">Owner</span>
+    <a class="side-item" href="owner.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#grid"></use></svg>Overview</a>
+    <a class="side-item" href="owner-approvals.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#shield"></use></svg>Approvals<span class="count-badge" data-owner-count hidden>0</span></a>
+    <a class="side-item" href="owner-payouts.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#bank"></use></svg>Payouts</a>
+    <a class="side-item is-active" href="owner-events.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#calendar"></use></svg>All events</a>
+    <span class="side-divider" aria-hidden="true"></span>
+    <a class="side-item" href="promoter.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#chart"></use></svg>Promoter view</a>
+    <a class="side-item" href="index.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#home"></use></svg>Back to site</a>
+    <button type="button" class="side-item" data-owner-reset><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#settings"></use></svg>Reset sample data</button>
+  </nav>
+
+  <main id="main" class="dash-main" data-owner-events>
+    <div class="dash-title">
+      <div>
+        <h1>All events</h1>
+        <span class="muted">Every event from every promoter</span>
+      </div>
+    </div>
+
+    <section class="panel panel-gold stack" aria-labelledby="ev-table" style="gap: 14px">
+      <div class="row" style="flex-wrap: wrap">
+        <h2 id="ev-table">Events</h2>
+        <div class="seg" role="group" aria-label="Show events">
+          <button type="button" data-ev-filter="all" aria-pressed="true">All<span class="n" data-n></span></button>
+          <button type="button" data-ev-filter="live" aria-pressed="false">Live<span class="n" data-n></span></button>
+          <button type="button" data-ev-filter="pending" aria-pressed="false">Pending approval<span class="n" data-n></span></button>
+          <button type="button" data-ev-filter="ended" aria-pressed="false">Ended<span class="n" data-n></span></button>
+          <button type="button" data-ev-filter="rejected" aria-pressed="false">Rejected<span class="n" data-n></span></button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table" style="min-width: 720px">
+          <thead><tr><th scope="col">Event</th><th scope="col">Date</th><th scope="col">Status</th><th scope="col">Sold</th><th scope="col" class="num">Ticket sales</th><th scope="col" class="num"><span class="sr-only">Action</span></th></tr></thead>
+          <tbody data-event-rows></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/app.js?v=3"></script>
+<script src="assets/js/owner.js?v=3"></script>
+</body>
+</html>

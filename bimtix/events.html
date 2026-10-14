@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>Events — BimTix</title>
+<meta name="description" content="Find events in Barbados and across the Caribbean: fetes, concerts, beach parties and yacht experiences.">
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Design preview · sample events and prices · nothing is on sale yet</div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix — events, tickets, experiences" width="125" height="62"></a>
+    <nav class="nav" id="site-nav" aria-label="Main" data-nav>
+      <a href="index.html">Home</a>
+      <a href="events.html" aria-current="page">Events</a>
+      <a href="rewards.html">Rewards</a>
+      <a href="promoters.html">For promoters</a>
+    </nav>
+    <div class="header-actions">
+      <a class="signin-link" href="signin.html" aria-label="Sign in"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#user"></use></svg><span>Sign in</span></a>
+      <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu" data-nav-toggle><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#menu"></use></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Events</p>
+      <h1>What’s on in <span class="gold">Bim</span></h1>
+      <p class="lede">Fetes, concerts, beach parties and yacht experiences across Barbados and the Caribbean.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="filters">
+      <form class="search" role="search" data-search>
+        <label class="sr-only" for="q">Search events</label>
+        <input id="q" name="q" type="search" placeholder="Search events or places" autocomplete="off">
+        <label class="sr-only" for="where">Location</label>
+        <select id="where" name="where">
+          <option value="all">All locations</option>
+          <option value="bridgetown">Bridgetown</option>
+          <option value="west">West Coast &amp; St James</option>
+        </select>
+        <label class="sr-only" for="when">Date</label>
+        <select id="when" name="when">
+          <option value="all">Any date</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+        </select>
+        <button class="btn btn-gold" type="submit">Search</button>
+      </form>
+      <div class="cats" role="group" aria-label="Filter by type">
+        <button type="button" class="cat" data-cat="all" aria-pressed="true"><span class="cat-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#grid"></use></svg></span>All</button>
+        <button type="button" class="cat" data-cat="music" aria-pressed="false"><span class="cat-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#music"></use></svg></span>Music</button>
+        <button type="button" class="cat" data-cat="carnival" aria-pressed="false"><span class="cat-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#mask"></use></svg></span>Carnival</button>
+        <button type="button" class="cat" data-cat="vip" aria-pressed="false"><span class="cat-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#vip"></use></svg></span>VIP</button>
+        <button type="button" class="cat" data-cat="yacht" aria-pressed="false"><span class="cat-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#yacht"></use></svg></span>Yacht</button>
+      </div>
+    </div>
+
+    <section class="events-list" aria-labelledby="results-title">
+      <div class="section-head">
+        <h2 id="results-title">All events</h2>
+        <span class="rule" aria-hidden="true"></span>
+        <span class="count" data-event-count aria-live="polite">4 events</span>
+      </div>
+      <div class="event-grid" data-event-grid>
+        <noscript><p class="empty-state">Turn on JavaScript to see and filter events.</p></noscript>
+      </div>
+      <p class="note">Selling an event? <a class="gold" href="promoters.html">List it on BimTix</a>.</p>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand"><img src="assets/img/bimtix-logo.png" alt="BimTix" width="125" height="62"><span>A Tech Nova company · Barbados · © <span data-year>2026</span></span></div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="events.html">Events</a>
+      <a href="rewards.html">Rewards</a>
+      <a href="promoters.html">For promoters</a>
+      <a href="promoter.html">Promoter dashboard</a>
+      <a href="owner.html">Owner dashboard</a>
+      <a href="signin.html">Sign in</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/app.js?v=3"></script>
+</body>
+</html>

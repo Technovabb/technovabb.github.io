@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>Event — BimTix</title>
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
+</head>
+<body class="has-bar-page">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Design preview · sample events and prices · nothing is on sale yet</div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix — events, tickets, experiences" width="125" height="62"></a>
+    <nav class="nav" id="site-nav" aria-label="Main" data-nav>
+      <a href="index.html">Home</a>
+      <a href="events.html" aria-current="page">Events</a>
+      <a href="rewards.html">Rewards</a>
+      <a href="promoters.html">For promoters</a>
+    </nav>
+    <div class="header-actions">
+      <a class="signin-link" href="signin.html" aria-label="Sign in"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#user"></use></svg><span>Sign in</span></a>
+      <a class="btn btn-outline" href="events.html">Get tickets</a>
+      <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu" data-nav-toggle><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#menu"></use></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="app has-bar" data-event-page>
+  <a class="back" href="events.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#arrow-left"></use></svg>All events</a>
+
+  <div class="photo-slot event-photo">
+    <img class="mark" src="assets/img/bimtix-icon.png" alt="">
+    <span class="photo-label">Promoter flyer</span>
+    <div class="date-badge" data-ev-badge></div>
+    <button type="button" class="save-btn" data-save="island-riddim" aria-pressed="false" aria-label="Save this event"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#heart"></use></svg></button>
+    <button type="button" class="save-btn share-btn" data-share aria-label="Share this event"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#share"></use></svg></button>
+  </div>
+
+  <div class="stack">
+    <span class="kicker" data-ev-kicker></span>
+    <h1 class="event-title" data-ev-title>Island Riddim</h1>
+    <p class="muted" style="margin: 0" data-ev-sub></p>
+  </div>
+
+  <div class="stack">
+    <div class="info-row">
+      <span class="info-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#calendar"></use></svg></span>
+      <div><strong data-ev-date></strong><span class="muted small" data-ev-time></span></div>
+    </div>
+    <div class="info-row">
+      <span class="info-icon"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#pin"></use></svg></span>
+      <div><strong data-ev-venue></strong><span class="muted small"><span data-ev-area></span> · <a class="gold" href="#" target="_blank" rel="noopener" data-ev-directions>Directions<span class="sr-only"> (opens Google Maps)</span></a></span></div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Choose tickets</h2>
+  <div class="stack" data-tiers></div>
+  <div class="points-note">
+    <img src="assets/img/bimtix-icon.png" alt="">
+    <span>You’ll earn <strong class="gold" data-points>0 points</strong> with BimTix Rewards.</span>
+  </div>
+  <p class="muted small" style="margin: 0">Up to 6 tickets per person. Tickets arrive in your account, on WhatsApp and by email.</p>
+  <p class="sr-only" aria-live="polite" data-live></p>
+</main>
+
+<div class="buy-bar">
+  <div class="buy-bar-inner">
+    <div><span class="muted small" data-count>0 tickets</span><div class="buy-total" data-total>BBD $0</div></div>
+    <a class="btn btn-gold" href="checkout.html" data-continue>Continue</a>
+  </div>
+</div>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/app.js?v=3"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>Payouts — BimTix owner</title>
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Owner dashboard · design preview · sample sales and sample fee rates</div>
+
+<div class="dash">
+  <nav class="dash-side" aria-label="Owner menu">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix" width="125" height="62"></a>
+    <span class="side-label">Owner</span>
+    <a class="side-item" href="owner.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#grid"></use></svg>Overview</a>
+    <a class="side-item" href="owner-approvals.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#shield"></use></svg>Approvals<span class="count-badge" data-owner-count hidden>0</span></a>
+    <a class="side-item is-active" href="owner-payouts.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#bank"></use></svg>Payouts</a>
+    <a class="side-item" href="owner-events.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#calendar"></use></svg>All events</a>
+    <span class="side-divider" aria-hidden="true"></span>
+    <a class="side-item" href="promoter.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#chart"></use></svg>Promoter view</a>
+    <a class="side-item" href="index.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#home"></use></svg>Back to site</a>
+    <button type="button" class="side-item" data-owner-reset><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#settings"></use></svg>Reset sample data</button>
+  </nav>
+
+  <main id="main" class="dash-main" data-owner-payouts>
+    <div class="dash-title">
+      <div>
+        <h1>Payouts</h1>
+        <span class="muted">What every promoter will be paid, and what BimTix keeps</span>
+      </div>
+      <a class="btn btn-gold" href="owner-approvals.html#payouts">Payouts to approve</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span class="muted">Owed to promoters</span><div class="stat-value" data-p-owed>BBD $0</div><span class="small muted">All events not yet paid</span></div>
+      <div class="stat stat-blue"><span>Waiting for your approval</span><div class="stat-value" data-p-review>BBD $0</div><span class="small">Events that have ended</span></div>
+      <div class="stat"><span class="muted">Paid out so far</span><div class="stat-value" data-p-paid>BBD $0</div><span class="small muted">Sent to promoters</span></div>
+      <div class="stat"><span class="muted">BimTix keeps (est.)</span><div class="stat-value" data-p-keep>BBD $0</div><span class="small muted">Across all events</span></div>
+    </div>
+
+    <section class="panel panel-gold stack" aria-labelledby="payout-table" style="gap: 14px">
+      <div class="row" style="flex-wrap: wrap">
+        <div><h2 id="payout-table">Every event</h2><span class="muted small">All amounts in Barbados dollars (BBD)</span></div>
+        <div class="seg" role="group" aria-label="Show payouts">
+          <button type="button" data-payout-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-payout-filter="review" aria-pressed="false">Needs approval</button>
+          <button type="button" data-payout-filter="upcoming" aria-pressed="false">Upcoming</button>
+          <button type="button" data-payout-filter="paid" aria-pressed="false">Paid</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table table-wide">
+          <thead>
+            <tr>
+              <th scope="col">Event</th><th scope="col">Date</th><th scope="col" class="num">Tickets</th>
+              <th scope="col" class="num">Ticket sales</th><th scope="col" class="num">Refunds</th>
+              <th scope="col" class="num">Promoter payout</th><th scope="col" class="num">BimTix fees</th>
+              <th scope="col" class="num">Card processing (est.)</th><th scope="col" class="num">BimTix keeps</th>
+              <th scope="col">Status</th><th scope="col" class="num"><span class="sr-only">Action</span></th>
+            </tr>
+          </thead>
+          <tbody data-payout-rows></tbody>
+          <tfoot data-payout-foot></tfoot>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel stack" aria-labelledby="how-title" style="gap: 8px">
+      <h2 id="how-title">How the numbers are worked out</h2>
+      <p class="muted" style="margin: 0">These are <strong style="color: var(--sand)">sample rates</strong> so you can see the shape of the business. They’re not decided yet.</p>
+      <ul class="muted" style="margin: 0; padding-left: 18px">
+        <li><strong style="color: var(--sand)">Buyers pay</strong> the ticket price plus a 5% BimTix service fee.</li>
+        <li><strong style="color: var(--sand)">Promoter payout</strong> = ticket sales − refunds, sent 3 days after the event once you approve it.</li>
+        <li><strong style="color: var(--sand)">Card processing</strong> is estimated at 3.5% of what buyers pay, until we choose the Barbados payment provider.</li>
+        <li><strong style="color: var(--sand)">BimTix keeps</strong> the service fees minus card processing.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/app.js?v=3"></script>
+<script src="assets/js/owner.js?v=3"></script>
+</body>
+</html>

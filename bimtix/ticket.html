@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>Your tickets — BimTix</title>
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Design preview · sample ticket · not valid for entry</div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix — events, tickets, experiences" width="125" height="62"></a>
+    <a class="icon-btn" href="account.html" aria-label="Close and go to my account"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#close"></use></svg></a>
+  </div>
+</header>
+
+<main id="main" class="app" data-ticket-page>
+  <h1 class="page-title">Your tickets</h1>
+  <p class="success"><span class="success-dot"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#check"></use></svg></span><span data-tk-sent>Payment received — you’re going.</span></p>
+
+  <article class="ticket" data-tk-article>
+    <div class="ticket-top">
+      <div class="row">
+        <span class="ticket-brand"><img src="assets/img/bimtix-icon.png" alt="">BIMTIX</span>
+        <span class="muted small" data-tk-count>Ticket 1 of 1</span>
+      </div>
+      <h2 data-tk-title>Island Riddim</h2>
+      <span class="muted" data-tk-when></span>
+      <span class="muted" data-tk-where></span>
+    </div>
+    <div class="perf" aria-hidden="true"></div>
+    <div class="ticket-bottom">
+      <div class="qr"><canvas width="189" height="189" role="img" aria-label="Ticket QR code" data-tk-qr></canvas></div>
+      <span class="ticket-code" data-tk-code></span>
+      <div class="ticket-holder">
+        <span><span class="muted">Name</span><br><strong data-tk-name>Kerry B.</strong></span>
+        <span style="text-align: right"><span class="muted">Ticket</span><br><strong data-tk-type>General</strong></span>
+      </div>
+    </div>
+  </article>
+
+  <div class="ticket-pager" data-tk-pager>
+    <button type="button" class="btn btn-ghost btn-sm" data-tk-prev><svg class="i i-sm" aria-hidden="true"><use href="assets/img/icons.svg#arrow-left"></use></svg>Previous</button>
+    <button type="button" class="btn btn-ghost btn-sm" data-tk-next>Next<svg class="i i-sm" aria-hidden="true"><use href="assets/img/icons.svg#arrow-right"></use></svg></button>
+  </div>
+
+  <div class="ticket-actions">
+    <button type="button" class="action-btn" data-demo="Apple and Google Wallet passes come with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#wallet"></use></svg>Add to Wallet</button>
+    <button type="button" class="action-btn" data-demo="Ticket transfers come with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#send"></use></svg>Send to a friend</button>
+    <a class="action-btn" href="#" target="_blank" rel="noopener" data-tk-directions><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#pin"></use></svg>Directions<span class="sr-only"> (opens Google Maps)</span></a>
+  </div>
+  <a class="btn btn-outline" href="account.html">See all my tickets</a>
+</main>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/app.js?v=3"></script>
+</body>
+</html>

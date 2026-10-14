@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>Event sales — BimTix promoter</title>
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=11">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Design preview · sample promoter data</div>
+
+<div class="dash">
+  <nav class="dash-side" aria-label="Promoter menu">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix" width="125" height="62"></a>
+    <span class="side-label">Promoter</span>
+    <a class="side-item is-active" href="promoter.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#grid"></use></svg>Overview</a>
+    <a class="side-item" href="promoter-event-new.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#calendar"></use></svg>New event</a>
+    <button type="button" class="side-item is-soon" data-demo="Sales exports come with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#chart"></use></svg>Sales</button>
+    <button type="button" class="side-item is-soon" data-demo="The door-scanning app comes with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#scan"></use></svg>Door scanning</button>
+    <button type="button" class="side-item is-soon" data-demo="Payouts need the payment provider first."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#bank"></use></svg>Payouts</button>
+    <a class="side-item" href="index.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#home"></use></svg>Back to site</a>
+  </nav>
+
+  <main id="main" class="dash-main" data-promoter-event>
+    <a class="back" href="promoter.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#arrow-left"></use></svg>All my events</a>
+    <div class="dash-title">
+      <div>
+        <div class="row" style="justify-content: flex-start"><h1 data-pe-title>Event</h1><span class="status-pill" data-pe-status></span></div>
+        <span class="muted" data-pe-when></span>
+      </div>
+      <div class="btn-row"><a class="btn btn-ghost" href="#" data-pe-page hidden>View event page</a><a class="btn btn-gold" href="#" data-pe-edit hidden>Change details</a></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span class="muted">Tickets sold</span><div class="stat-value" data-pe-sold>0</div><div class="meter" aria-hidden="true"><span data-pe-meter style="width: 0%"></span></div></div>
+      <div class="stat"><span class="muted">Ticket sales (your share)</span><div class="stat-value" data-pe-sales>BBD $0</div><span class="small gold" data-pe-today></span></div>
+      <div class="stat stat-blue"><span>Payout</span><div class="stat-value" data-pe-payout>—</div><span class="small" data-pe-payout-note></span></div>
+      <div class="stat"><span class="muted">Checked in</span><div class="stat-value" data-pe-in>0</div><span class="small muted">Door scanning opens on event night</span></div>
+    </div>
+
+    <section class="panel panel-gold" aria-labelledby="flyer-title">
+      <h2 id="flyer-title">Flyer</h2>
+      <div class="flyer-panel" style="margin-top: 12px">
+        <div class="flyer-preview" data-pe-flyer><img class="mark" src="assets/img/bimtix-icon.png" alt="" width="56" height="56"></div>
+        <div class="stack" style="gap: 10px; flex: 1 1 240px">
+          <p class="muted small" style="margin: 0" data-pe-flyer-note>JPEG, PNG or WebP, at least 400 × 400 pixels, up to 3 MB. A tall picture (4:5) looks best. You can change it until BimTix approves the event.</p>
+          <label class="btn btn-ghost" style="align-self: flex-start" data-pe-flyer-pick>Choose a picture<input type="file" accept="image/jpeg,image/png,image/webp" class="sr-only" data-pe-flyer-file></label>
+          <p class="small gold signin-error" role="alert" data-pe-flyer-error></p>
+        </div>
+      </div>
+    </section>
+
+    <div class="dash-row">
+      <section class="panel panel-gold wide" aria-labelledby="chart-title">
+        <div class="row"><h2 id="chart-title">Tickets per day</h2><span class="muted small">Last 14 days</span></div>
+        <div class="bars" role="img" data-pe-bars></div>
+        <div class="row muted small" style="margin-top: 8px"><span>14 days ago</span><span>Today</span></div>
+      </section>
+      <section class="panel panel-gold stack" aria-labelledby="types-title" style="gap: 14px">
+        <h2 id="types-title">Ticket types</h2>
+        <div class="stack" style="gap: 14px" data-pe-types></div>
+        <div class="row small" style="padding-top: 10px; border-top: 1px solid var(--line)"><span class="muted">Buy limit</span><span data-pe-limit></span></div>
+      </section>
+    </div>
+
+    <section class="panel panel-gold" aria-labelledby="orders-title">
+      <div class="row" style="margin-bottom: 8px"><h2 id="orders-title">Latest orders</h2><span class="muted small">Buyers’ contact details stay private with BimTix</span></div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th scope="col">Order</th><th scope="col">Buyer</th><th scope="col">Tickets</th><th scope="col" class="num">Your share</th><th scope="col" class="num">When</th></tr></thead>
+          <tbody data-pe-orders></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/api.js?v=3"></script>
+<script src="assets/js/app.js?v=17"></script>
+<script src="assets/js/promoter.js?v=4"></script>
+</body>
+</html>

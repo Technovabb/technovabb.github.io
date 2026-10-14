@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>Become a promoter — BimTix</title>
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=11">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Design preview · nothing is sent from this form</div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix — events, tickets, experiences" width="125" height="62"></a>
+    <nav class="nav" id="site-nav" aria-label="Main" data-nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Events</a>
+      <a href="rewards.html">Rewards</a>
+      <a href="promoters.html" aria-current="page">For promoters</a>
+    </nav>
+    <div class="header-actions">
+      <a class="signin-link" href="signin.html" aria-label="Sign in"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#user"></use></svg><span>Sign in</span></a>
+      <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu" data-nav-toggle><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#menu"></use></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="app" data-promoter-apply>
+  <a class="back" href="promoters.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#arrow-left"></use></svg>For promoters</a>
+  <div class="stack" style="gap: 6px">
+    <h1 class="page-title">Sell tickets on <span class="gold">BimTix</span></h1>
+    <p class="muted" style="margin: 0">Tell us about your business. We check every promoter before their events go on sale. That’s how buyers know a BimTix event is real.</p>
+  </div>
+
+  <form class="stack" style="gap: 16px" data-apply-form novalidate>
+    <div class="field">
+      <label for="ap-name">Business or brand name</label>
+      <input class="input" id="ap-name" maxlength="100" autocomplete="organization" required placeholder="e.g. Riddim Nation Entertainment">
+    </div>
+    <fieldset class="panel">
+      <legend>What can you show us?</legend>
+      <label class="check-row"><input type="checkbox" data-ap-reg>Business registration (certificate or letter)</label>
+      <label class="check-row"><input type="checkbox" data-ap-id>Photo ID of the owner</label>
+      <label class="check-row"><input type="checkbox" data-ap-bank>Bank details for your payouts</label>
+      <span class="muted small">We’ll be in touch to collect these. You can add events straight away; they go on sale once you’re verified. Payouts only go to a verified business’s bank account.</span>
+    </fieldset>
+    <p class="small gold signin-error" role="alert" data-apply-error></p>
+    <button class="btn btn-gold btn-block" type="submit">Send application</button>
+  </form>
+</main>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/api.js?v=3"></script>
+<script src="assets/js/app.js?v=17"></script>
+<script src="assets/js/promoter.js?v=4"></script>
+</body>
+</html>

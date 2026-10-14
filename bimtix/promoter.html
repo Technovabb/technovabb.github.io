@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
-<link rel="stylesheet" href="assets/css/styles.css?v=4">
+<link rel="stylesheet" href="assets/css/styles.css?v=11">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -22,15 +22,15 @@
     <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix" width="125" height="62"></a>
     <span class="side-label">Promoter</span>
     <a class="side-item is-active" href="promoter.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#grid"></use></svg>Overview</a>
-    <button type="button" class="side-item is-soon" data-demo="Event set-up comes with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#calendar"></use></svg>Events</button>
-    <button type="button" class="side-item is-soon" data-demo="Detailed sales reports come with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#chart"></use></svg>Sales</button>
+    <a class="side-item" href="promoter-event-new.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#calendar"></use></svg>New event</a>
+    <button type="button" class="side-item is-soon" data-demo="Sales exports come with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#chart"></use></svg>Sales</button>
     <button type="button" class="side-item is-soon" data-demo="The door-scanning app comes with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#scan"></use></svg>Door scanning</button>
     <button type="button" class="side-item is-soon" data-demo="Payouts need the payment provider first."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#bank"></use></svg>Payouts</button>
     <button type="button" class="side-item is-soon" data-demo="Promo codes come with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#tag"></use></svg>Promo codes</button>
     <a class="side-item" href="index.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#home"></use></svg>Back to site</a>
   </nav>
 
-  <main id="main" class="dash-main">
+  <main id="main" class="dash-main" data-promoter-overview>
     <div class="dash-title">
       <div>
         <div class="row" style="justify-content: flex-start"><h1>Island Riddim</h1><span class="status-pill">On sale</span></div>
@@ -101,6 +101,8 @@
 </div>
 
 <script src="assets/js/data.js?v=3"></script>
-<script src="assets/js/app.js?v=3"></script>
+<script src="assets/js/api.js?v=3"></script>
+<script src="assets/js/app.js?v=17"></script>
+<script src="assets/js/promoter.js?v=4"></script>
 </body>
 </html>

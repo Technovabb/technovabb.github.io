@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
-<link rel="stylesheet" href="assets/css/styles.css?v=4">
+<link rel="stylesheet" href="assets/css/styles.css?v=11">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -56,13 +56,33 @@
 
   <div class="ticket-actions">
     <button type="button" class="action-btn" data-demo="Apple and Google Wallet passes come with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#wallet"></use></svg>Add to Wallet</button>
-    <button type="button" class="action-btn" data-demo="Ticket transfers come with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#send"></use></svg>Send to a friend</button>
+    <button type="button" class="action-btn" data-demo="Ticket transfers work on the real site: sign in, open your ticket and send it." data-tk-send><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#send"></use></svg>Send to a friend</button>
     <a class="action-btn" href="#" target="_blank" rel="noopener" data-tk-directions><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#pin"></use></svg>Directions<span class="sr-only"> (opens Google Maps)</span></a>
   </div>
+
+  <form class="panel stack" style="gap: 12px" data-send-form hidden novalidate>
+    <h2 class="section-title" style="margin: 0">Send this ticket to a friend</h2>
+    <p class="muted small" style="margin: 0">It moves to their BimTix account and your copy stops working straight away. A ticket can be passed on up to 3 times.</p>
+    <div class="field"><label for="send-name">Their full name</label><input class="input" id="send-name" autocomplete="off" maxlength="80" required></div>
+    <div class="field"><label for="send-to">Their mobile number or email</label><input class="input" id="send-to" autocomplete="off" maxlength="200" placeholder="+1 246 … or name@example.com" required></div>
+    <p class="small gold signin-error" role="alert" data-send-error></p>
+    <div class="row"><button class="btn btn-ghost" type="button" data-send-cancel>Cancel</button><button class="btn btn-gold" type="submit">Send ticket</button></div>
+  </form>
+
+  <button type="button" class="link-btn" data-refund-open hidden>Need a refund?</button>
+  <p class="muted small" style="margin: 0" data-refund-pending hidden>Refund requested. BimTix will reply soon; your tickets keep working until then.</p>
+  <form class="panel stack" style="gap: 12px" data-refund-form hidden novalidate>
+    <h2 class="section-title" style="margin: 0">Ask for a refund</h2>
+    <p class="muted small" style="margin: 0" data-refund-note></p>
+    <div class="field"><label for="refund-reason">Why do you need a refund?</label><textarea class="input" id="refund-reason" maxlength="300" rows="3"></textarea></div>
+    <p class="small gold signin-error" role="alert" data-refund-error></p>
+    <div class="row"><button class="btn btn-ghost" type="button" data-refund-cancel>Cancel</button><button class="btn btn-gold" type="submit">Send request</button></div>
+  </form>
   <a class="btn btn-outline" href="account.html">See all my tickets</a>
 </main>
 
 <script src="assets/js/data.js?v=3"></script>
-<script src="assets/js/app.js?v=3"></script>
+<script src="assets/js/api.js?v=3"></script>
+<script src="assets/js/app.js?v=17"></script>
 </body>
 </html>

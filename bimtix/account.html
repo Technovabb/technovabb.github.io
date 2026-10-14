@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
-<link rel="stylesheet" href="assets/css/styles.css?v=4">
+<link rel="stylesheet" href="assets/css/styles.css?v=11">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -66,13 +66,23 @@
       <button type="button" data-demo="Saved cards come with the payment provider."><span>Payment methods</span><span class="val">Card ending 4417</span></button>
       <button type="button" data-demo="Choose WhatsApp, email or both (full build)."><span>Ticket delivery</span><span class="val">WhatsApp + email</span></button>
       <button type="button" data-demo="Event reminders and new-event alerts (full build)."><span>Notifications</span><span class="val">On</span></button>
-      <button type="button" data-demo="Help and refunds page comes with the full build."><span>Help &amp; refunds</span><span class="val"></span></button>
+      <button type="button" data-demo="To ask for a refund, open your tickets and tap “Need a refund?”."><span>Help &amp; refunds</span><span class="val"></span></button>
+      <button type="button" data-demo="On the real site this downloads everything BimTix holds about you." data-my-data><span>Download my data</span><span class="val"></span></button>
+      <button type="button" data-demo="On the real site you can delete your account here." data-delete-open><span>Delete my account</span><span class="val"></span></button>
     </div>
-    <a class="btn btn-ghost" href="index.html">Sign out</a>
+    <form class="panel stack" style="gap: 12px" data-delete-form hidden novalidate>
+      <h2 class="section-title" style="margin: 0">Delete my account</h2>
+      <p class="muted small" style="margin: 0">This removes your name, phone, email, saved events and Rewards points for good, and signs you out everywhere. Records of past purchases stay, without your details, because the accounts still have to add up. You can’t delete your account while you have tickets for upcoming events.</p>
+      <div class="field"><label for="delete-confirm">Type DELETE to confirm</label><input class="input" id="delete-confirm" autocomplete="off" maxlength="10"></div>
+      <p class="small gold signin-error" role="alert" data-delete-error></p>
+      <div class="row"><button class="btn btn-ghost" type="button" data-delete-cancel>Cancel</button><button class="btn btn-gold" type="submit">Delete my account</button></div>
+    </form>
+    <a class="btn btn-ghost" href="index.html" data-signout>Sign out</a>
   </section>
 </main>
 
 <script src="assets/js/data.js?v=3"></script>
-<script src="assets/js/app.js?v=3"></script>
+<script src="assets/js/api.js?v=3"></script>
+<script src="assets/js/app.js?v=17"></script>
 </body>
 </html>

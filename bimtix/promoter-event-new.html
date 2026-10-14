@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>New event — BimTix promoter</title>
+<link rel="icon" href="favicon.ico" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Jost:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css?v=11">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="preview-bar" role="note">Design preview · nothing is sent from this form</div>
+
+<div class="dash">
+  <nav class="dash-side" aria-label="Promoter menu">
+    <a class="logo" href="index.html" aria-label="BimTix home"><img src="assets/img/bimtix-logo.png" alt="BimTix" width="125" height="62"></a>
+    <span class="side-label">Promoter</span>
+    <a class="side-item" href="promoter.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#grid"></use></svg>Overview</a>
+    <a class="side-item is-active" href="promoter-event-new.html" aria-current="page"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#calendar"></use></svg>New event</a>
+    <button type="button" class="side-item is-soon" data-demo="Sales exports come with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#chart"></use></svg>Sales</button>
+    <button type="button" class="side-item is-soon" data-demo="The door-scanning app comes with the full build."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#scan"></use></svg>Door scanning</button>
+    <button type="button" class="side-item is-soon" data-demo="Payouts need the payment provider first."><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#bank"></use></svg>Payouts</button>
+    <a class="side-item" href="index.html"><svg class="i" aria-hidden="true"><use href="assets/img/icons.svg#home"></use></svg>Back to site</a>
+  </nav>
+
+  <main id="main" class="dash-main" data-promoter-new>
+    <div class="dash-title">
+      <div>
+        <h1>New event</h1>
+        <span class="muted">Send it to BimTix. It goes on sale once an owner approves it, usually within a day.</span>
+      </div>
+    </div>
+
+    <form class="panel stack" style="gap: 18px; max-width: 760px" data-new-event novalidate>
+      <div class="field"><label for="ev-title">Event name</label><input class="input" id="ev-title" maxlength="100" required placeholder="e.g. Island Riddim"></div>
+      <div class="field"><label for="ev-sub">Short description <span class="muted small">(optional)</span></label><input class="input" id="ev-sub" maxlength="120" placeholder="e.g. The Ultimate Soca Experience"></div>
+      <div class="field"><label for="ev-about">About the event <span class="muted small">(optional, shown on the event page)</span></label><textarea class="input" id="ev-about" maxlength="2000" rows="5" placeholder="What’s included, dress code, age limit, parking…"></textarea></div>
+      <div class="field"><label for="ev-lineup">Line-up <span class="muted small">(optional, comma between names)</span></label><input class="input" id="ev-lineup" maxlength="400" placeholder="e.g. Mr Killa, Lil Rick, DJ Puffy"></div>
+      <div class="form-grid">
+        <div class="field"><label for="ev-start">Date and start time (Barbados time)</label><input class="input" id="ev-start" type="datetime-local" required></div>
+        <div class="field"><label for="ev-max">Most tickets one person can buy</label><input class="input" id="ev-max" type="number" inputmode="numeric" min="1" max="20" value="6" required></div>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label for="ev-venue">Venue</label><input class="input" id="ev-venue" maxlength="120" placeholder="e.g. Kensington Oval"></div>
+        <div class="field"><label for="ev-area">Area</label><input class="input" id="ev-area" maxlength="120" placeholder="e.g. Bridgetown, Barbados"></div>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="ev-region">Where on the island</label>
+          <select class="input" id="ev-region">
+            <option value="">Choose…</option>
+            <option value="bridgetown">Bridgetown</option>
+            <option value="west">West Coast &amp; St James</option>
+            <option value="south">South Coast &amp; Christ Church</option>
+            <option value="east">East &amp; North</option>
+          </select>
+        </div>
+        <div class="field"><label for="ev-tags">Up to 3 words that describe it <span class="muted small">(comma between)</span></label><input class="input" id="ev-tags" maxlength="70" placeholder="e.g. Soca, All-inclusive, Beach"></div>
+      </div>
+      <fieldset class="plain-fieldset">
+        <legend style="margin-bottom: 8px; font-weight: 600">Categories <span class="muted small">(helps people find it)</span></legend>
+        <div class="channel-pick">
+          <label class="check-row"><input type="checkbox" value="music" data-ev-cat>Music</label>
+          <label class="check-row"><input type="checkbox" value="carnival" data-ev-cat>Carnival</label>
+          <label class="check-row"><input type="checkbox" value="vip" data-ev-cat>VIP</label>
+          <label class="check-row"><input type="checkbox" value="yacht" data-ev-cat>Yacht</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="plain-fieldset stack" style="gap: 10px">
+        <legend class="section-title" style="margin-bottom: 10px">Ticket types</legend>
+        <p class="muted small" style="margin: 0">Prices are in Barbados dollars. Buyers also pay the BimTix service fee on top; your payout is the ticket price.</p>
+        <div class="stack" style="gap: 10px" data-type-rows></div>
+        <button type="button" class="link-btn" data-add-type>+ Add another ticket type</button>
+      </fieldset>
+
+      <p class="small gold signin-error" role="alert" data-new-error></p>
+      <div class="row" style="justify-content: flex-end; gap: 10px">
+        <a class="btn btn-ghost" href="promoter.html">Cancel</a>
+        <button class="btn btn-gold" type="submit">Send for approval</button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/api.js?v=3"></script>
+<script src="assets/js/app.js?v=17"></script>
+<script src="assets/js/promoter.js?v=4"></script>
+</body>
+</html>

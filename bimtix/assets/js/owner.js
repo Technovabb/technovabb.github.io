@@ -1,17 +1,30 @@
-/* BimTix owner dashboard (design build).
-   Sample data: BIMTIX.owner in data.js. Decisions (approve, reject, hold) are
-   saved in this browser only so the review flow can be tried end to end.
-   Money model and rates are samples — see the note on the Payouts page. */
-(function () {
+/* BimTix owner dashboard.
+   On the real server (laptop or bimtix.com) everything comes from the
+   database and every decision is a real, recorded action.
+   On the design preview it uses the sample data in data.js (BIMTIX.owner)
+   and decisions are saved in this browser only.
+   Rates are estimates until the payment provider is chosen. */
+(async function () {
   "use strict";
 
   const D = window.BIMTIX;
-  const O = D && D.owner;
+  let O = D && D.owner;
   const X = window.BTX;
   if (!O || !X) return;
   const { money, dateParts, toast, esc, icon, load, store, plural } = X;
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+
+  // Wait for app.js to check the server and who is signed in.
+  const ctx = X.ready ? await X.ready : { live: false };
+  const LIVE = Boolean(ctx.live);
+  const API = window.BTAPI;
+  if (LIVE) {
+    O = await API.call("owner/dashboard");
+    const bar = $(".preview-bar");
+    if (bar) bar.textContent = D.live.mode === "laptop" ? "Owner dashboard · real data from the laptop test server" : "Owner dashboard";
+    $$("[data-owner-reset]").forEach((b) => { b.hidden = true; });
+  }
 
   /* ---------- Decisions ---------- */
   const KEY = "bimtix-owner";
@@ -29,11 +42,15 @@
     return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
   }
 
-  /* ---------- Money for one event (sample rates) ---------- */
+  /* ---------- Money for one event ----------
+     Real server: actual service fees and points discounts (BimTix pays for
+     points, not the promoter). Card processing is still an estimate. */
   function figures(ev) {
-    const fees = ev.sales * D.feeRate;
-    const processing = (ev.sales + fees) * O.processingRate;
-    return { fees, processing, payout: ev.sales - ev.refunds, keep: fees - processing };
+    const fees = ev.fees != null ? ev.fees : ev.sales * D.feeRate;
+    const discounts = ev.discounts || 0;
+    const processing = (ev.sales + fees - discounts) * O.processingRate;
+    const payout = ev.payoutAmount != null ? ev.payoutAmount : ev.sales - ev.refunds;
+    return { fees, discounts, netFees: fees - discounts, processing, payout, keep: fees - discounts - processing };
   }
 
   /* ---------- Statuses after decisions ---------- */
@@ -47,9 +64,11 @@
   function payoutStatus(ev) {
     const st = eventStatus(ev);
     if (st === "pending" || st === "rejected") return { key: "none", label: "No sales yet" };
-    if (isHeldByFlag(ev.id) || S.payouts[ev.id] === "held") return { key: "hold", label: "On hold" };
+    if (isHeldByFlag(ev.id) || S.payouts[ev.id] === "held" || ev.payout === "hold") return { key: "hold", label: "On hold" };
     if (ev.payout === "paid") return { key: "paid", label: `Paid ${dateParts(ev.paidOn).short}` };
+    if (ev.payout === "approved") return { key: "approved", label: "Approved · ready to send" };
     if (ev.payout === "review") {
+      if (ev.myApproval) return { key: "approved", label: "You approved · needs the other owner" };
       return S.payouts[ev.id] === "approved" ? { key: "approved", label: "Approved · sending" } : { key: "review", label: "Needs approval" };
     }
     return { key: "scheduled", label: `After event · ${dateParts(addDays(ev.date, O.payoutDelayDays)).short}` };
@@ -60,7 +79,7 @@
   /* ---------- What needs the owner ---------- */
   function queue() {
     const items = [];
-    O.events.filter((e) => e.payout === "review" && !S.payouts[e.id] && !isHeldByFlag(e.id)).forEach((e) => items.push({
+    O.events.filter((e) => e.payout === "review" && !e.myApproval && !S.payouts[e.id] && !isHeldByFlag(e.id)).forEach((e) => items.push({
       type: "Payout", title: `${money(figures(e).payout)} to ${promoter(e.promoter).name}`,
       sub: `${e.title} · ended ${dateParts(e.date).short}`, href: "owner-approvals.html#payouts"
     }));
@@ -127,8 +146,9 @@
     refunds: { yes: "approved", no: "declined", yesLabel: "Approve refund", noLabel: "Decline", yesDone: "Refunded", noDone: "Declined" },
     flags: { yes: "cleared", no: "held", yesLabel: "Looks fine", noLabel: "Hold payouts", yesDone: "Cleared", noDone: "Payouts held" }
   };
-  function decision(kind, id) {
+  function decision(kind, id, item) {
     const c = DECIDE[kind];
+    if (item && item.myApproval) return `<div class="decision">${pill("approved", "You approved · waiting for the other owner")}</div>`;
     const d = S[kind][id];
     if (d) {
       const ok = d === c.yes;
@@ -136,9 +156,9 @@
     }
     return `<div class="decision"><button type="button" class="btn btn-ghost btn-sm" data-decide="${kind}:${id}:${c.no}">${c.noLabel}</button><button type="button" class="btn btn-gold btn-sm" data-decide="${kind}:${id}:${c.yes}">${c.yesLabel}</button></div>`;
   }
-  const card = (tag, title, lines, side, kind, id) => `<article class="approval">
+  const card = (tag, title, lines, side, kind, id, item) => `<article class="approval">
       <div class="grow">${tag}<h3>${title}</h3>${lines.map((l) => `<p class="muted small">${l}</p>`).join("")}</div>
-      <div class="approval-side">${side || ""}${decision(kind, id)}</div>
+      <div class="approval-side">${side || ""}${decision(kind, id, item)}</div>
     </article>`;
   const none = (text) => `<p class="empty-state">${text}</p>`;
 
@@ -149,8 +169,9 @@
       const f = figures(e);
       return card(pill("review", "Payout"), `${esc(e.title)} → ${esc(promoter(e.promoter).name)}`, [
         `Ended ${dateParts(e.date).short} · ${e.sold} tickets`,
-        `Ticket sales ${money(e.sales)} − refunds ${money(e.refunds)}`
-      ], `<div class="amount">${money(f.payout)}</div>`, "payouts", e.id);
+        `Ticket sales ${money(e.sales)} − refunds ${money(e.refunds)}`,
+        ...(LIVE ? [`Needs two owners · ${plural(e.approvals || 0, "approval")} so far`] : [])
+      ], `<div class="amount">${money(f.payout)}</div>`, "payouts", e.id, e);
     }).join("") || none("No payouts waiting.");
 
     $("[data-ap-events]").innerHTML = O.events.filter((e) => e.status === "pending").map((e) => {
@@ -159,13 +180,20 @@
       return card(pill("review", "New event"), esc(e.title), [
         `${esc(p.name)} · ${dateParts(e.date).long} · ${esc(e.venue)}`,
         `${e.capacity} capacity · ${esc(e.tiers)}`,
-        `Submitted ${dateParts(e.submitted).short}${newPromoter ? ' · <strong class="gold">Promoter not verified yet</strong>' : ""}`
-      ], "", "events", e.id);
+        `Submitted ${dateParts(e.submitted).short}${newPromoter ? ' · <strong class="gold">Promoter not verified yet</strong>' : ""}`,
+        ...(LIVE && e.description ? [`About: “${esc(e.description.length > 280 ? `${e.description.slice(0, 280)}…` : e.description)}”`] : []),
+        ...(LIVE && e.lineup && e.lineup.length ? [`Line-up: ${esc(e.lineup.join(" · "))}`] : []),
+        ...(LIVE ? [e.flyer ? "Check the flyer before publishing:" : "No flyer yet (the event page will show a placeholder)."] : [])
+      ], e.flyer ? `<a href="${esc(e.flyer)}" target="_blank" rel="noopener"><img class="approval-flyer" src="${esc(e.flyer)}" alt="${esc(e.title)} flyer (opens full size)"></a>` : "", "events", e.id);
     }).join("") || none("No new events waiting.");
 
+    // Real server: tick each document once you've seen it (recorded). Preview: just shown.
+    const checkLine = (p) => (LIVE
+      ? `<span class="check-list">${p.checks.map((c) => `<label class="check-row"><input type="checkbox" data-pcheck="${p.id}:${c.key}"${c.done ? " checked" : ""}>${esc(c.label)}</label>`).join("")}</span>`
+      : p.checks.map((c) => `${c.done ? "✓" : "✗"} ${esc(c.label)}`).join(" · "));
     $("[data-ap-promoters]").innerHTML = O.promoters.filter((p) => p.status === "pending").map((p) => card(
       pill("review", "New promoter"), esc(p.name),
-      [`Applied ${dateParts(p.submitted).short}`, p.checks.map((c) => `${c.done ? "✓" : "✗"} ${esc(c.label)}`).join(" · ")].concat(
+      [`Applied ${dateParts(p.submitted).short}${LIVE ? " · tick each document once you’ve seen it" : ""}`, checkLine(p)].concat(
         p.checks.some((c) => !c.done) ? ['<strong class="gold">Payouts stay on hold until bank details are added.</strong>'] : []),
       "", "promoters", p.id
     )).join("") || none("No promoters waiting.");
@@ -195,7 +223,7 @@
       paid: (e) => payoutStatus(e).key === "paid"
     };
     const rows = all.filter(groups[payoutFilter]);
-    const cash = (n) => "$" + Math.round(n).toLocaleString("en-US");
+    const cash = (n) => (Math.round(n) < 0 ? "−$" : "$") + Math.abs(Math.round(n)).toLocaleString("en-US");
     const RAW = ["sold", "sales", "refunds"];
     const sum = (list, k) => list.reduce((s, e) => s + (RAW.includes(k) ? e[k] : figures(e)[k]), 0);
 
@@ -208,11 +236,16 @@
     $("[data-payout-rows]").innerHTML = rows.length ? rows.map((e) => {
       const f = figures(e);
       const ps = payoutStatus(e);
-      const action = ps.key === "review"
-        ? `<button type="button" class="btn btn-gold btn-sm" data-decide="payouts:${e.id}:approved">Approve</button>`
-        : ps.key === "approved" || S.payouts[e.id] === "held"
-          ? `<button type="button" class="btn btn-ghost btn-sm" data-undo="payouts:${e.id}">Undo</button>`
-          : "";
+      let action = "";
+      if (LIVE) {
+        if (ps.key === "review") action = `<button type="button" class="btn btn-gold btn-sm" data-decide="payouts:${e.id}:approved">Approve</button>`;
+        else if (e.payout === "approved") action = `<button type="button" class="btn btn-gold btn-sm" data-sent="${e.id}">Mark sent</button>`;
+        else if (e.payout === "hold") action = `<button type="button" class="btn btn-ghost btn-sm" data-decide="payouts:${e.id}:release">Release hold</button>`;
+      } else if (ps.key === "review") {
+        action = `<button type="button" class="btn btn-gold btn-sm" data-decide="payouts:${e.id}:approved">Approve</button>`;
+      } else if (ps.key === "approved" || S.payouts[e.id] === "held") {
+        action = `<button type="button" class="btn btn-ghost btn-sm" data-undo="payouts:${e.id}">Undo</button>`;
+      }
       return `<tr>
         <td><strong>${esc(e.title)}</strong><br><span class="muted small">${esc(promoter(e.promoter).name)}</span></td>
         <td>${dateParts(e.date).short}</td>
@@ -220,7 +253,7 @@
         <td class="num">${cash(e.sales)}</td>
         <td class="num">${e.refunds ? "−" + cash(e.refunds) : "—"}</td>
         <td class="num"><strong>${cash(f.payout)}</strong></td>
-        <td class="num">${cash(f.fees)}</td>
+        <td class="num">${cash(f.netFees)}</td>
         <td class="num">−${cash(f.processing)}</td>
         <td class="num">${cash(f.keep)}</td>
         <td>${pill(ps.key, ps.label)}</td>
@@ -234,7 +267,7 @@
       <td class="num">${cash(sum(rows, "sales"))}</td>
       <td class="num">−${cash(sum(rows, "refunds"))}</td>
       <td class="num"><strong>${cash(sum(rows, "payout"))}</strong></td>
-      <td class="num">${cash(sum(rows, "fees"))}</td>
+      <td class="num">${cash(sum(rows, "netFees"))}</td>
       <td class="num">−${cash(sum(rows, "processing"))}</td>
       <td class="num">${cash(sum(rows, "keep"))}</td>
       <td colspan="2"></td>
@@ -280,11 +313,51 @@
     renderEvents();
   }
 
+  /* Real server: send the decision, then reload everything from the database. */
+  let busy = false;
+  async function act(kind, id, value, extra) {
+    if (busy) return;
+    busy = true;
+    try {
+      const r = await API.call("owner/decide", { method: "POST", body: JSON.stringify({ kind, id, value, ...(extra || {}) }) });
+      toast(r.message);
+    } catch (err) {
+      toast(err.message);
+    }
+    try { O = await API.call("owner/dashboard"); } catch (err) { toast(err.message); }
+    busy = false;
+    renderAll();
+  }
+
+  document.addEventListener("change", async (e) => {
+    const box = e.target.closest("[data-pcheck]");
+    if (!box || !LIVE || busy) return;
+    const [id, check] = box.getAttribute("data-pcheck").split(":");
+    busy = true;
+    try {
+      toast((await API.call("owner/promoter-check", { method: "POST", body: JSON.stringify({ id, check, done: box.checked }) })).message);
+      O = await API.call("owner/dashboard");
+    } catch (err) {
+      box.checked = !box.checked;
+      toast(err.message);
+    }
+    busy = false;
+    renderAll();
+  });
+
   const DONE_MSG = { approved: "Approved", held: "Put on hold", rejected: "Rejected", declined: "Declined", cleared: "Cleared" };
   document.addEventListener("click", (e) => {
+    const sent = e.target.closest("[data-sent]");
+    if (sent && LIVE) {
+      const ev = O.events.find((x) => x.id === sent.getAttribute("data-sent"));
+      const ref = window.prompt(`Bank transfer reference for the ${money(figures(ev).payout)} payout to ${promoter(ev.promoter).name}:`);
+      if (ref && ref.trim()) act("payouts", ev.id, "sent", { bankRef: ref.trim() });
+      return;
+    }
     const d = e.target.closest("[data-decide]");
     if (d) {
       const [kind, id, value] = d.getAttribute("data-decide").split(":");
+      if (LIVE) { act(kind, id, value); return; }
       S[kind][id] = value;
       save();
       toast(`${DONE_MSG[value] || "Done"} (sample — nothing is sent)`);

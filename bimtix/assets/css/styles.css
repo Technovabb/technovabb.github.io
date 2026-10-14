@@ -279,6 +279,7 @@ input[type="checkbox"], input[type="radio"] { width: 20px; height: 20px; margin:
 .totals .row { color: var(--stone); }
 .totals .grand { margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(247, 229, 198, .12); color: var(--sand); font-family: var(--font-head); font-weight: 600; font-size: 19px; }
 .demo-note { margin: 0; color: var(--stone); font-size: 12px; text-align: center; }
+[data-co-error]:empty, [data-fee-note]:empty { display: none; }
 
 /* Ticket */
 .success { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--stone); }
@@ -296,6 +297,8 @@ input[type="checkbox"], input[type="radio"] { width: 20px; height: 20px; margin:
 .ticket-bottom { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 18px 20px 20px; }
 .qr { padding: 12px; border-radius: 14px; background: #fff; }
 .qr canvas { display: block; width: 189px; height: 189px; image-rendering: pixelated; }
+.qr svg { display: block; width: 189px; height: 189px; }
+[data-co-timer]:empty { display: none; }
 .ticket-code { font-family: var(--font-head); font-weight: 600; font-size: 17px; letter-spacing: .14em; }
 .ticket-holder { display: flex; justify-content: space-between; align-self: stretch; padding-top: 10px; border-top: 1px solid var(--line); font-size: 14px; }
 .ticket-pager { display: flex; align-items: center; justify-content: center; gap: 16px; }
@@ -318,7 +321,44 @@ input[type="checkbox"], input[type="radio"] { width: 20px; height: 20px; margin:
 .provider { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; border: 1px solid rgba(247, 229, 198, .25); border-radius: 12px; font-weight: 600; text-decoration: none; }
 .provider:hover { border-color: var(--gold); }
 .link-btn { min-height: 44px; padding: 0; border: 0; background: none; color: var(--gold); font-weight: 600; cursor: pointer; align-self: flex-start; }
+.link-btn:disabled { color: var(--stone); cursor: default; }
+.channel-pick { display: flex; flex-wrap: wrap; gap: 4px 24px; margin: 0; padding: 0; border: 0; }
+.dev-code { margin: 0; padding: 10px 12px; border: 1px dashed var(--line-gold); border-radius: 10px; color: var(--sand); font-size: 14px; }
+.signin-error { margin: 0; font-weight: 600; }
+.signin-error:empty { display: none; }
+.twostep-setup { align-items: center; gap: 10px; text-align: center; }
+.setup-key { display: inline-block; margin-top: 6px; color: var(--sand); font-size: 15px; letter-spacing: .08em; word-break: break-all; }
 [hidden] { display: none !important; }
+/* Event description */
+.about-text { margin: 0; white-space: pre-line; color: var(--sand); line-height: 1.6; }
+
+/* Flyers (real pictures replace the hatched placeholder) */
+.photo-slot .flyer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.photo-slot.has-flyer { background: var(--onyx); }
+.flyer-panel { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.flyer-preview { display: grid; place-items: center; width: 180px; aspect-ratio: 4 / 5; border-radius: 12px; overflow: hidden; background: var(--hatch), var(--onyx); border: 1px solid var(--line-gold); }
+.flyer-preview img { width: 100%; height: 100%; object-fit: cover; }
+.check-list { display: flex; flex-wrap: wrap; gap: 0 20px; color: var(--sand); }
+.check-list .check-row { min-height: 36px; }
+.approval-flyer { width: 96px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; border: 1px solid var(--line-gold); }
+
+/* Promoter forms */
+.input { color-scheme: dark; }
+textarea.input { height: auto; min-height: 96px; padding: 12px 14px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.type-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; padding: 14px; border: 1px solid var(--line-gold); border-radius: 12px; }
+.type-row .wide { grid-column: 1 / -1; }
+.type-row .field label { margin-bottom: 6px; font-size: 14px; }
+.type-row-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; grid-column: 1 / -1; }
+.plain-fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+@media (max-width: 560px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .type-row { grid-template-columns: 1fr 1fr; }
+  .type-row .field:first-child { grid-column: 1 / -1; }
+}
+
+/* Pages that need a signed-in person stay blank until that's checked */
+html[data-gate] .dash, html[data-gate] [data-account], html[data-gate] [data-promoter-apply] { visibility: hidden; }
 
 /* Account */
 .account-head { display: flex; align-items: center; gap: 12px; }

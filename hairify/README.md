@@ -278,4 +278,77 @@ them. Set reorder points so this is useful.
 
 ---
 
+## The Odoo route
+
+The client also has an Odoo trial at `hairify.odoo.com`. If the shop is to live
+there instead of on this app, `tools/` loads the whole catalogue into it over
+Odoo's external API — no re-typing 84 variants by hand.
+
+```bash
+node tools/odoo-sync.mjs --dry-run      # print the plan, write nothing
+node tools/odoo-sync.mjs                # build it
+node tools/odoo-sync.mjs --stage=stock  # one stage: company, attributes,
+                                        # categories, products, stock, kits,
+                                        # delivery, pos
+```
+
+It needs these in the environment — **never in a chat or a committed file**:
+
+| Variable | Value |
+| --- | --- |
+| `ODOO_URL` | `https://hairify.odoo.com` |
+| `ODOO_DB` | `hairify` |
+| `ODOO_USERNAME` | the email you sign into Odoo with |
+| `ODOO_API_KEY` | Odoo → avatar → My Profile → Account Security → New API Key |
+
+An API key is preferred over `ODOO_PASSWORD`: it is scoped, and revoking it does
+not mean changing the password. The run is re-runnable — every record is looked
+up before it is created, so running twice updates rather than duplicates.
+
+### How the two models line up
+
+Odoo does not price a variant directly. It prices a template and adds a
+`price_extra` to each option, so Miracle Knots loads as **$220 base, with 16"
++$25, 18" +$40 and 20" +$75** rather than as twenty separate prices.
+`tools/odoo-map.mjs` works that out and *proves* it — it rebuilds every variant
+price from the base and the extras, and reports anything it cannot express
+instead of loading a wrong price. All 22 products currently map cleanly.
+
+| Hairify | Odoo |
+| --- | --- |
+| Texture / length / colour | `product.attribute` and its values |
+| Product | `product.template`, variants generated from the options |
+| Per-length pricing | `product.template.attribute.value.price_extra` |
+| Opening stock | `stock.quant`, applied as an inventory adjustment |
+| Deal / Miracle Knot Box | `mrp.bom` of type `phantom` — **needs the Manufacturing app** |
+| Rate per parish, reduced over $150 | `delivery.carrier` on `base_on_rule`, two price rules |
+| Till | `pos.config` |
+
+### Two things the run will tell you about
+
+- **Currency.** Every price in the catalogue is Barbados dollars. If the Odoo
+  database is set to anything else the run **reports it and does not change it** —
+  loading BBD prices into a USD database would silently mis-price the shop.
+  Fix it under Settings → Companies → Currency first.
+- **Apps.** eCommerce, Point of Sale, Inventory and Delivery Methods each have to
+  be installed in Odoo before the matching stage can do its job; kits also need
+  Manufacturing. The run lists whatever is missing. Note that more than one app
+  puts an odoo.com database on a **paid plan** — the free tier covers one app.
+
+### Which route to choose
+
+| | This app | Odoo |
+| --- | --- | --- |
+| Monthly cost | a Node host, roughly $5–15 | Odoo licence, per user, several apps |
+| Already built | yes, tested end to end | catalogue loads in minutes, then configuration |
+| Fits the concept design | exactly — it was built from it | Odoo's own themes, needs work to get close |
+| Maintenance | yours | Odoo's |
+| Accounting, purchasing, payroll | not built | included |
+
+The honest summary: Odoo is the better choice if Hairify wants the whole back
+office and will pay monthly for it. This app is the better choice if the concept
+design matters and the shop wants to own it outright.
+
+---
+
 Built by Tech Nova Barbados Limited · admin@technovabb.com · (246) 230-8303

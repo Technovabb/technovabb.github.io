@@ -17,6 +17,12 @@
   const findEvent = (id) => D.events.find((e) => e.id === id);
   const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
+  // Installable app: phones offer "Install" / "Add to Home Screen" once the service worker runs.
+  // Browsers only allow it on HTTPS or the laptop's localhost.
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || ["localhost", "127.0.0.1"].includes(location.hostname))) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  }
+
   function dateParts(iso) {
     const [y, m, d] = iso.split("-").map(Number);
     const dt = new Date(y, m - 1, d);

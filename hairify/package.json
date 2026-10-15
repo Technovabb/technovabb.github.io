@@ -1,0 +1,21 @@
+{
+  "name": "hairify-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hairify Hair Store — online shop, point of sale and inventory platform. Built by Tech Nova Barbados Limited.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node --no-warnings src/server.js",
+    "dev": "node --no-warnings --watch src/server.js",
+    "setup": "node --no-warnings src/db/setup.js",
+    "reset": "node --no-warnings src/db/setup.js --force",
+    "test": "node --no-warnings --test"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "express": "^5.1.0"
+  }
+}

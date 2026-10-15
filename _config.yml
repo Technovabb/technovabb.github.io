@@ -1,0 +1,8 @@
+# GitHub Pages builds this repository with Jekyll. Everything here is plain HTML
+# that Jekyll passes straight through, so this file sets no other options.
+#
+# The hairify/ directory is a Node application for a client, not part of the
+# Tech Nova website. Excluding it keeps its source off technovabb.com; it is
+# deployed separately to a Node host (see hairify/README.md).
+exclude:
+  - hairify

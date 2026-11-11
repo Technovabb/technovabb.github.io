@@ -112,6 +112,96 @@ function odooContactForm(doc, old) {
   old.replaceWith(tpl.content);
 }
 
+// ---------- Support (Odoo Helpdesk) ----------
+// The menu and footer link to /support, a page with a Helpdesk ticket form (team 1,
+// "Tech Nova Support"). Clients follow their tickets from the emailed link or /my/tickets.
+const HELPDESK_TEAM_ID = 1;
+function addSupportLinks(doc, isHome) {
+  const link = () => { const a = doc.createElement('a'); a.setAttribute('href', '/support'); a.textContent = 'Support'; return a; };
+  if (isHome) {
+    for (const a of doc.querySelectorAll('a')) if (a.textContent.trim() === 'Support') a.setAttribute('href', '/support');
+    return;
+  }
+  const links = doc.querySelector('nav .links');
+  if (links && ![...links.children].some((a) => a.textContent.trim() === 'Support')) links.appendChild(link());
+  const explore = [...doc.querySelectorAll('footer h4')].find((h) => h.textContent.trim() === 'Explore');
+  if (explore && ![...explore.parentElement.querySelectorAll('a')].some((a) => a.textContent.trim() === 'Support')) explore.parentElement.appendChild(link());
+}
+
+function supportPage(template, heroStyle) {
+  const dom = new JSDOM(`<!doctype html><body>${template.arch}</body>`);
+  const doc = dom.window.document;
+  const wrap = doc.getElementById('wrap');
+  wrap.setAttribute('data-page', 'support');
+  for (const s of [...wrap.querySelectorAll('script')]) s.remove();
+  const hero = doc.querySelector('header.subhero');
+  if (heroStyle) hero.setAttribute('style', heroStyle);
+  hero.querySelector('.crumb').textContent = 'Home / Support';
+  hero.querySelector('h1').textContent = 'Support';
+  hero.querySelector('p').textContent = "Report a problem or ask for help. We'll keep you updated by email until it's fixed.";
+  const field = (id, label, input, extra = '', type = 'char') =>
+    `<div class="tk-fld s_website_form_field ${extra}" data-type="${type}" data-name="Field">` +
+    `<label class="s_website_form_label" for="${id}"><span class="s_website_form_label_content">${label}</span></label>${input}</div>`;
+  const req = 's_website_form_required';
+  doc.querySelector('.tn-main').innerHTML =
+    `<section class="tn-content"><div class="shell content-grid"><div>` +
+    `<h2>Open a support ticket</h2>` +
+    `<p>Tell us what's wrong. Your ticket goes straight to our team, and we email you a link to follow its progress.</p>` +
+    `<form class="tk-form s_website_form" id="ticketForm" action="/website/form/" method="post" enctype="multipart/form-data" data-model_name="helpdesk.ticket" data-success-mode="message" data-success-page="" novalidate="novalidate">` +
+    `<input type="hidden" name="team_id" value="${HELPDESK_TEAM_ID}">` +
+    `<div class="tk-row">` +
+    field('tk-name', 'Your name', `<input class="s_website_form_input" id="tk-name" name="partner_name" type="text" autocomplete="name" required="required">`, req) +
+    field('tk-company', 'Company', `<input class="s_website_form_input" id="tk-company" name="partner_company_name" type="text" autocomplete="organization">`) +
+    `</div><div class="tk-row">` +
+    field('tk-email', 'Email', `<input class="s_website_form_input" id="tk-email" name="partner_email" type="email" autocomplete="email" required="required">`, req, 'email') +
+    field('tk-phone', 'Phone', `<input class="s_website_form_input" id="tk-phone" name="partner_phone" type="tel" autocomplete="tel">`, '', 'tel') +
+    `</div>` +
+    field('tk-subject', 'Subject', `<input class="s_website_form_input" id="tk-subject" name="name" type="text" required="required" placeholder="e.g. Wi-Fi down in the back office">`, `${req} s_website_form_model_required`) +
+    field('tk-desc', "What's happening?", `<textarea class="s_website_form_input" id="tk-desc" name="description" required="required" placeholder="What stopped working, when it started, and where (site or room)."></textarea>`, req, 'text') +
+    field('tk-file', 'Photo or file (optional)', `<input class="s_website_form_input" id="tk-file" name="attachment" type="file" multiple="multiple" data-max-files-number="5" data-max-file-size="10">`, '', 'binary') +
+    `<div class="s_website_form_submit"><button class="tn-btn s_website_form_send" type="submit">Submit ticket →</button><span id="s_website_form_result"></span></div>` +
+    `</form>` +
+    `<div class="tk-form tk-end s_website_form_end_message d-none"><h3>Ticket received</h3>` +
+    `<p>Thanks. We've emailed you your ticket number and a link to follow its progress. We'll be in touch within one business day.</p>` +
+    `<p>Urgent? Call or WhatsApp <a href="tel:+12462308303">(246) 230-8303</a>.</p></div>` +
+    `</div><aside class="side">` +
+    `<h3>Track your tickets</h3>` +
+    `<p class="tk-side-note">Every update is emailed to you. Have a Tech Nova account? See all your tickets in one place.</p>` +
+    `<a href="/my/tickets">My tickets →</a>` +
+    `<h3 class="tk-side-gap">Urgent?</h3>` +
+    `<a href="tel:+12462308303">Call (246) 230-8303 →</a>` +
+    `<a href="https://wa.me/12462308303?text=Hi%20Tech%20Nova%2C%20I%20need%20support.">WhatsApp us →</a>` +
+    `<a href="/#plans">Support plans →</a>` +
+    `</aside></div></section>`;
+  const arch = new dom.window.XMLSerializer().serializeToString(wrap).replace(/ xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '');
+  return {
+    file: '(support)', url: '/support', name: 'Support', arch,
+    metaTitle: 'Support | Tech Nova',
+    metaDescription: 'Open a support ticket with Tech Nova and follow its progress online. For urgent help, call or WhatsApp (246) 230-8303.',
+    ogImage: template.ogImage,
+  };
+}
+
+const SUPPORT_CSS = `
+.tn-inner .tk-form{background:#fff;border:1px solid var(--line);border-radius:6px;padding:28px 26px;box-shadow:0 14px 34px rgba(3,23,42,.08);margin-top:24px}
+.tn-inner .tk-form h3{font-family:'Sora',Arial,sans-serif;font-size:19px;text-transform:uppercase;margin:0 0 12px}
+.tn-inner .tk-form label{display:block;text-transform:uppercase;letter-spacing:.5px;font-size:10px;font-weight:900;color:var(--muted);margin-bottom:6px}
+.tn-inner .tk-form input:not([type=hidden]):not([type=file]),.tn-inner .tk-form textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:3px;font-family:inherit;font-size:14px;color:var(--ink);background:#fff;transition:.15s}
+.tn-inner .tk-form input:focus,.tn-inner .tk-form textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(8,124,240,.13)}
+.tn-inner .tk-form textarea{resize:vertical;min-height:130px}
+.tn-inner .tk-form input[type=file]{font-size:13px;color:var(--muted)}
+.tn-inner .tk-fld{margin-bottom:15px}
+.tn-inner .tk-row{display:flex;gap:12px}
+.tn-inner .tk-row .tk-fld{flex:1}
+.tn-inner .tk-form button{width:100%;border:0;cursor:pointer;margin-top:4px}
+.tn-inner .tk-form .is-invalid{border-color:#d3452e}
+.tn-inner #s_website_form_result{display:block;margin-top:10px;font-size:13px;color:#d3452e}
+.tn-inner .tk-end a{color:var(--blue);font-weight:600}
+.tn-inner .tk-side-note{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 8px}
+.tn-inner .tk-side-gap{margin-top:24px}
+@media(max-width:700px){.tn-inner .tk-row{display:block}}
+`;
+
 // ---------- Convert every page ----------
 const pages = [];
 const footerScripts = new Map();
@@ -176,6 +266,7 @@ for (const file of files) {
     while (m.firstChild) d.appendChild(m.firstChild);
     m.replaceWith(d);
   }
+  addSupportLinks(doc, isHome);
 
   // Wrap the body in Odoo's #wrap
   const wrap = doc.createElement('div');
@@ -196,6 +287,12 @@ for (const file of files) {
     file, url: newUrl(file), name: name.trim(), metaTitle: title, metaDescription: description,
     ogImage: ogImage ? mapUrl(ogImage, file) : '', arch: xhtml,
   });
+}
+{
+  const tpl = pages.find((p) => p.url === '/privacy');
+  const managedIt = pages.find((p) => p.url === '/services/managed-it');
+  const heroStyle = managedIt && (managedIt.arch.match(/<header class="subhero" style="([^"]*)"/) || [])[1];
+  pages.push(supportPage(tpl, heroStyle && heroStyle.replace(/&amp;/g, '&')));
 }
 
 // ---------- CSS ----------
@@ -236,7 +333,7 @@ function scopeCss(css, prefix, file) {
 }
 
 const homeCss = read('index.html').match(/<style[^>]*>([\s\S]*?)<\/style>/)[1];
-const css = RESET + scopeCss(homeCss, '.tn-home', 'index.html') + '\n' + scopeCss(read('assets/page.css'), '.tn-inner', 'assets/page.css');
+const css = RESET + scopeCss(homeCss, '.tn-home', 'index.html') + '\n' + scopeCss(read('assets/page.css'), '.tn-inner', 'assets/page.css') + SUPPORT_CSS;
 
 const homeDoc = new JSDOM(read('index.html')).window.document;
 const verify = homeDoc.querySelector('meta[name="google-site-verification"]').content;

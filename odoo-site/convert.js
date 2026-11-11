@@ -198,7 +198,7 @@ const SUPPORT_CSS = `
 .tn-inner #s_website_form_result{display:block;margin-top:10px;font-size:13px;color:#d3452e}
 .tn-inner .tk-end a{color:var(--blue);font-weight:600}
 .tn-inner .tk-side-note{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 8px}
-.tn-inner .tk-side-gap{margin-top:24px}
+.tn-inner .side .tk-side-gap{margin-top:26px}
 @media(max-width:700px){.tn-inner .tk-row{display:block}}
 `;
 

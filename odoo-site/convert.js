@@ -1,0 +1,247 @@
+// Turns the static technovabb.com pages into a payload for Odoo's website builder.
+//
+//   node odoo-site/convert.js <repo root> <folder holding node_modules>
+//
+// Output: odoo-site/payload.json. It holds every page's body as XHTML (for the
+// QWeb view arch), its SEO fields, the scoped site CSS for website.custom_code_head,
+// the shared scripts for website.custom_code_footer, the list of images to upload
+// and the old-URL -> new-URL redirects. Image links are left as placeholders:
+//   tnasset:photos/x.jpg     -> /web/image/<id>/<name>       (filled in inside Odoo)
+//   tnassetabs:photos/x.jpg  -> https://www.technovabb.com/web/image/<id>/<name>
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const ROOT = path.resolve(process.argv[2] || '.');
+const NM = process.argv[3] ? path.resolve(process.argv[3]) : null;
+const need = (m) => require(NM ? path.join(NM, 'node_modules', m) : m);
+const { JSDOM } = need('jsdom');
+const postcss = need('postcss');
+const prefixer = need('postcss-prefix-selector');
+
+const OLD = 'https://technovabb.com';
+const NEW = 'https://www.technovabb.com';
+const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
+const warnings = [];
+
+// ---------- Pages and their new addresses ----------
+const files = execSync('git ls-files "*.html"', { cwd: ROOT }).toString().trim().split('\n')
+  .filter((f) => !f.startsWith('bimtix/'));
+const newUrl = (f) => {
+  if (f === 'index.html') return '/';
+  if (f === 'terms.html') return '/terms-of-service'; // Odoo already owns /terms
+  if (f.endsWith('/index.html')) return '/' + f.slice(0, -'/index.html'.length);
+  return '/' + f.replace(/\.html$/, '');
+};
+const OLD2NEW = {};
+const redirects = [];
+for (const f of files) {
+  const to = newUrl(f);
+  OLD2NEW['/' + f] = to;
+  if (f.endsWith('index.html')) OLD2NEW['/' + f.slice(0, -'index.html'.length)] = to;
+  // Old addresses that need a 301 once the domain points at Odoo.
+  if (to !== '/' + f) redirects.push({ from: '/' + f, to });
+  if (f.endsWith('/index.html')) redirects.push({ from: '/' + f.slice(0, -'index.html'.length), to });
+}
+
+const assets = new Set();
+const assetRef = (p, abs) => { assets.add(p); return (abs ? 'tnassetabs:' : 'tnasset:') + p; };
+
+// Map one href/src as written in <file> to its Odoo address.
+function mapUrl(href, file, opts = {}) {
+  if (!href) return href;
+  if (href === '#top') return '#tn-top';
+  if (/^(#|tel:|mailto:|javascript:|data:|sms:)/i.test(href)) return href;
+  let u;
+  try { u = new URL(href, OLD + '/' + file); } catch { return href; }
+  if (!/^(www\.)?technovabb\.com$/.test(u.host)) return href;
+  const p = u.pathname;
+  if (p.startsWith('/assets/')) return assetRef(p.slice('/assets/'.length), opts.abs);
+  const to = OLD2NEW[p];
+  if (to === undefined) { warnings.push(`${file}: no new address for ${href}`); return href; }
+  const hash = u.hash === '#top' ? '#tn-top' : u.hash;
+  return (opts.abs ? NEW + (to === '/' ? '/' : to) : to) + u.search + hash;
+}
+
+function mapCssUrls(css, file) {
+  return css.replace(/url\((['"]?)([^'")]+)\1\)/g, (m, q, u) => {
+    if (/^(data:|https?:\/\/fonts\.)/.test(u)) return m;
+    return `url('${mapUrl(u, file)}')`;
+  });
+}
+
+// Class and id names that Odoo's own CSS/JS already uses.
+const CLASS_RENAMES = { badge: 'tn-badge', content: 'tn-content', logo: 'tn-logo', show: 'tn-show' };
+const renameClass = (c) => (/^btn(-|$)/.test(c) ? 'tn-' + c : CLASS_RENAMES[c] || c);
+function renameCssNames(css) {
+  return css
+    .replace(/\.btn((?:-[\w-]+)?)(?![\w-])/g, '.tn-btn$1')
+    .replace(/\.(badge|content|logo|show)(?![\w-])/g, '.tn-$1')
+    .replace(/#top(?![\w-])/g, '#tn-top');
+}
+
+// ---------- page.js (inner pages) ----------
+const pageJs = read('assets/page.js');
+const PH = JSON.parse(pageJs.match(/const ph=(\{[\s\S]*?\});/)[1]);
+
+// ---------- The contact form, rebuilt as an Odoo website form (creates CRM leads) ----------
+function odooContactForm(doc, old) {
+  const topics = [...old.querySelectorAll('#cf-topic option')].map((o) => o.textContent);
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const field = (inner, extra = '', type = 'char') =>
+    `<div class="cf-fld s_website_form_field ${extra}" data-type="${type}" data-name="Field">${inner}</div>`;
+  const label = (id, text) => `<label class="s_website_form_label" for="${id}"><span class="s_website_form_label_content">${text}</span></label>`;
+  const html =
+    `<form class="contact-form s_website_form" id="contactForm" action="/website/form/" method="post" enctype="multipart/form-data" data-model_name="crm.lead" data-success-mode="message" data-success-page="" novalidate="novalidate">` +
+    `<h3>Send us a message</h3>` +
+    field(label('cf-name', 'Name') + `<input class="s_website_form_input" id="cf-name" name="contact_name" type="text" autocomplete="name" required="required">`, 's_website_form_required') +
+    `<div class="cf-row">` +
+    field(label('cf-email', 'Email') + `<input class="s_website_form_input" id="cf-email" name="email_from" type="email" autocomplete="email" required="required">`, 's_website_form_required', 'email') +
+    field(label('cf-phone', 'Phone') + `<input class="s_website_form_input" id="cf-phone" name="phone" type="tel" autocomplete="tel">`, '', 'tel') +
+    `</div>` +
+    field(label('cf-topic', 'What do you need?') + `<select class="s_website_form_input" id="cf-topic" name="name" required="required">${topics.map((t) => `<option>${esc(t)}</option>`).join('')}</select>`, 's_website_form_required s_website_form_model_required', 'selection') +
+    field(label('cf-message', 'Message') + `<textarea class="s_website_form_input" id="cf-message" name="description" required="required" placeholder="Tell us a little about your business and what you're looking for."></textarea>`, 's_website_form_required', 'text') +
+    `<div class="s_website_form_submit"><button class="tn-btn tn-btn-orange s_website_form_send" type="submit" id="cfBtn">Send message →</button><span id="s_website_form_result"></span></div>` +
+    `<p class="cf-note">Prefer email? Reach us any time at <a href="mailto:admin@technovabb.com">admin@technovabb.com</a></p>` +
+    `</form>` +
+    `<div class="contact-form s_website_form_end_message d-none"><h3>Message sent</h3><p class="cf-status tn-show ok">Thanks — your message has been sent. We’ll be in touch within one business day.</p><p class="cf-note">Anything urgent? Call or WhatsApp <a href="tel:+12462308303">(246) 230-8303</a>.</p></div>`;
+  const tpl = doc.createElement('template');
+  tpl.innerHTML = html;
+  old.replaceWith(tpl.content);
+}
+
+// ---------- Convert every page ----------
+const pages = [];
+const footerScripts = new Map();
+for (const file of files) {
+  const src = read(file);
+  const isHome = file === 'index.html';
+  const usesPageJs = /assets\/page\.js/.test(src);
+  const dom = new JSDOM(src, { runScripts: usesPageJs ? 'outside-only' : undefined });
+  const { document: doc } = dom.window;
+
+  if (usesPageJs) {
+    dom.window.eval(pageJs);
+    const key = doc.body.dataset.page;
+    const sub = doc.querySelector('.subhero');
+    if (sub && PH[key]) {
+      const f = PH[key].includes('/') ? PH[key] : 'photos/' + PH[key];
+      sub.setAttribute('style', `background-image:linear-gradient(120deg,rgba(3,23,42,.9),rgba(8,59,102,.58)),url('${'../assets/' + f}')`);
+    }
+  }
+
+  // SEO fields
+  const meta = (sel) => (doc.querySelector(sel) || {}).content || '';
+  const title = doc.title.trim();
+  const description = meta('meta[name="description"]');
+  const ogImage = meta('meta[property="og:image"]');
+  const name = (doc.querySelector('h1') || {}).textContent || title.split(' | ')[0];
+
+  // Keep JSON-LD (moved into the body), drop every other script. Behaviour scripts that
+  // matter go into custom_code_footer once, for the whole site.
+  const jsonld = [...doc.querySelectorAll('script[type="application/ld+json"]')].map((s) => {
+    const txt = s.textContent.replace(/https:\/\/technovabb\.com(\/[^"\s]*)?/g, (m, p) => mapUrl(p || '/', file, { abs: true }));
+    s.remove();
+    return txt;
+  });
+  for (const s of [...doc.querySelectorAll('script')]) {
+    const t = s.textContent;
+    if (/cf-topic/.test(t)) footerScripts.set('topic', t.trim());
+    else if (/\.ba-range/.test(t)) footerScripts.set('ba', t.trim());
+    s.remove();
+  }
+
+  if (isHome) odooContactForm(doc, doc.getElementById('contactForm'));
+
+  // Links, images and inline background images
+  const body = doc.body;
+  for (const a of body.querySelectorAll('[href]')) a.setAttribute('href', mapUrl(a.getAttribute('href'), file));
+  for (const i of body.querySelectorAll('[src]')) i.setAttribute('src', mapUrl(i.getAttribute('src'), file));
+  for (const e of body.querySelectorAll('[style]')) e.setAttribute('style', mapCssUrls(e.getAttribute('style'), file));
+  for (const e of body.querySelectorAll('[class]')) e.setAttribute('class', e.getAttribute('class').split(/\s+/).filter(Boolean).map(renameClass).join(' '));
+  const top = doc.getElementById('top');
+  if (top) top.id = 'tn-top';
+  for (const m of [...doc.querySelectorAll('main')]) {
+    const d = doc.createElement('div');
+    for (const at of m.attributes) d.setAttribute(at.name, at.value);
+    d.classList.add('tn-main');
+    while (m.firstChild) d.appendChild(m.firstChild);
+    m.replaceWith(d);
+  }
+
+  // Wrap the body in Odoo's #wrap
+  const wrap = doc.createElement('div');
+  wrap.id = 'wrap';
+  wrap.className = isHome ? 'tn-home' : 'tn-inner';
+  if (doc.body.dataset.page) wrap.setAttribute('data-page', doc.body.dataset.page);
+  for (const t of jsonld) {
+    const s = doc.createElement('script');
+    s.setAttribute('type', 'application/ld+json');
+    s.textContent = t;
+    wrap.appendChild(s);
+  }
+  while (doc.body.firstChild) wrap.appendChild(doc.body.firstChild);
+
+  let xhtml = new dom.window.XMLSerializer().serializeToString(wrap)
+    .replace(/ xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '');
+  pages.push({
+    file, url: newUrl(file), name: name.trim(), metaTitle: title, metaDescription: description,
+    ogImage: ogImage ? mapUrl(ogImage, file) : '', arch: xhtml,
+  });
+}
+
+// ---------- CSS ----------
+const RESET = `
+/* Undo Bootstrap's defaults inside our pages, so they look as they did on GitHub Pages. */
+:where(.tn-home,.tn-inner){line-height:normal;font-size:16px;text-align:left}
+:where(.tn-home,.tn-inner) :where(p){margin:1em 0}
+:where(.tn-home,.tn-inner) :where(h1,h2,h3,h4,h5,h6){font-weight:bold;line-height:normal;color:inherit}
+:where(.tn-home,.tn-inner) :where(h1){font-size:2em;margin:.67em 0}
+:where(.tn-home,.tn-inner) :where(h2){font-size:1.5em;margin:.83em 0}
+:where(.tn-home,.tn-inner) :where(h3){font-size:1.17em;margin:1em 0}
+:where(.tn-home,.tn-inner) :where(h4){font-size:1em;margin:1.33em 0}
+:where(.tn-home,.tn-inner) :where(ul,ol){margin:1em 0;padding-left:40px}
+:where(.tn-home,.tn-inner) :where(figure){margin:1em 40px}
+:where(.tn-home,.tn-inner) :where(label){display:inline;margin:0}
+:where(.tn-home,.tn-inner) :where(img,svg){vertical-align:baseline}
+:where(.tn-home,.tn-inner) :where(small){font-size:smaller}
+:where(.tn-home,.tn-inner) :where(a){color:inherit}
+:where(.tn-home,.tn-inner) :where(a:hover){color:inherit}
+.tn-home .contact-form .is-invalid{border-color:#d3452e}
+.tn-home #s_website_form_result{display:block;margin-top:10px;font-size:13px;color:#d3452e}
+`;
+
+function scopeCss(css, prefix, file) {
+  css = css.replace(/@import\s+url\([^)]*\)\s*;/g, '');
+  css = renameCssNames(mapCssUrls(css, file));
+  return postcss([prefixer({
+    prefix,
+    transform(pfx, selector, prefixed) {
+      if (/^html$/.test(selector)) return selector; // scroll-behaviour etc. stays global
+      if (/^(:root|body|html body)$/.test(selector)) return pfx;
+      if (/^body[.\[:#]/.test(selector)) return pfx + selector.slice(4);
+      if (/^body\s/.test(selector)) return pfx + selector.slice(4);
+      if (selector === '*') return `${pfx}, ${pfx} *`;
+      return prefixed;
+    },
+  })]).process(css, { from: undefined }).css;
+}
+
+const homeCss = read('index.html').match(/<style[^>]*>([\s\S]*?)<\/style>/)[1];
+const css = RESET + scopeCss(homeCss, '.tn-home', 'index.html') + '\n' + scopeCss(read('assets/page.css'), '.tn-inner', 'assets/page.css');
+
+const homeDoc = new JSDOM(read('index.html')).window.document;
+const verify = homeDoc.querySelector('meta[name="google-site-verification"]').content;
+const theme = homeDoc.querySelector('meta[name="theme-color"]').content;
+const headCode =
+  `<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>` +
+  `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Sora:wght@600;700;800&amp;display=swap"/>` +
+  `<meta name="google-site-verification" content="${verify}"/><meta name="theme-color" content="${theme}"/>` +
+  `<style>${css}</style>`;
+const footerCode = [...footerScripts.values()].map((s) => `<script>${s}</script>`).join('\n');
+
+const commit = execSync('git rev-parse --short HEAD', { cwd: ROOT }).toString().trim();
+const out = { source: `Technovabb/technovabb.github.io@${commit}`, assets: [...assets].sort(), headCode, footerCode, pages, redirects, warnings };
+fs.writeFileSync(path.join(ROOT, 'odoo-site', 'payload.json'), JSON.stringify(out));
+console.log(`pages ${pages.length}, assets ${assets.size}, redirects ${redirects.length}, css ${css.length} chars, footer scripts ${footerScripts.size}`);
+if (warnings.length) console.log('warnings:\n' + warnings.join('\n'));

@@ -200,6 +200,9 @@ const SUPPORT_CSS = `
 .tn-inner .tk-side-note{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 8px}
 .tn-inner .side .tk-side-gap{margin-top:26px}
 @media(max-width:700px){.tn-inner .tk-row{display:block}}
+/* Odoo's own pages (client portal, /my/tickets) use the site footer inside Odoo's footer block. */
+#footer .tn-odoo-footer a{color:inherit}
+.o_footer_copyright{display:none}
 `;
 
 // ---------- Convert every page ----------

@@ -94,6 +94,8 @@ function odooContactForm(doc, old) {
   const html =
     `<form class="contact-form s_website_form" id="contactForm" action="/website/form/" method="post" enctype="multipart/form-data" data-model_name="crm.lead" data-success-mode="message" data-success-page="" novalidate="novalidate">` +
     `<h3>Send us a message</h3>` +
+    // New leads go to the Sales team (id 1) and Juwan (user 2), so Odoo emails him about each one.
+    `<input type="hidden" name="team_id" value="1"><input type="hidden" name="user_id" value="2">` +
     field(label('cf-name', 'Name') + `<input class="s_website_form_input" id="cf-name" name="contact_name" type="text" autocomplete="name" required="required">`, 's_website_form_required') +
     `<div class="cf-row">` +
     field(label('cf-email', 'Email') + `<input class="s_website_form_input" id="cf-email" name="email_from" type="email" autocomplete="email" required="required">`, 's_website_form_required', 'email') +
@@ -194,19 +196,19 @@ for (const file of files) {
 const RESET = `
 /* Undo Bootstrap's defaults inside our pages, so they look as they did on GitHub Pages. */
 :where(.tn-home,.tn-inner){line-height:normal;font-size:16px;text-align:left}
-:where(.tn-home,.tn-inner) :where(p){margin:1em 0}
-:where(.tn-home,.tn-inner) :where(h1,h2,h3,h4,h5,h6){font-weight:bold;line-height:normal;color:inherit}
-:where(.tn-home,.tn-inner) :where(h1){font-size:2em;margin:.67em 0}
-:where(.tn-home,.tn-inner) :where(h2){font-size:1.5em;margin:.83em 0}
-:where(.tn-home,.tn-inner) :where(h3){font-size:1.17em;margin:1em 0}
-:where(.tn-home,.tn-inner) :where(h4){font-size:1em;margin:1.33em 0}
-:where(.tn-home,.tn-inner) :where(ul,ol){margin:1em 0;padding-left:40px}
-:where(.tn-home,.tn-inner) :where(figure){margin:1em 40px}
-:where(.tn-home,.tn-inner) :where(label){display:inline;margin:0}
-:where(.tn-home,.tn-inner) :where(img,svg){vertical-align:baseline}
-:where(.tn-home,.tn-inner) :where(small){font-size:smaller}
-:where(.tn-home,.tn-inner) :where(a){color:inherit}
-:where(.tn-home,.tn-inner) :where(a:hover){color:inherit}
+:where(.tn-home,.tn-inner) :is(p){margin:1em 0}
+:where(.tn-home,.tn-inner) :is(h1,h2,h3,h4,h5,h6){font-weight:bold;line-height:normal;color:inherit}
+:where(.tn-home,.tn-inner) :is(h1){font-size:2em;margin:.67em 0}
+:where(.tn-home,.tn-inner) :is(h2){font-size:1.5em;margin:.83em 0}
+:where(.tn-home,.tn-inner) :is(h3){font-size:1.17em;margin:1em 0}
+:where(.tn-home,.tn-inner) :is(h4){font-size:1em;margin:1.33em 0}
+:where(.tn-home,.tn-inner) :is(ul,ol){margin:1em 0;padding-left:40px}
+:where(.tn-home,.tn-inner) :is(figure){margin:1em 40px}
+:where(.tn-home,.tn-inner) :is(label){display:inline;margin:0}
+:where(.tn-home,.tn-inner) :is(img,svg){vertical-align:baseline}
+:where(.tn-home,.tn-inner) :is(small){font-size:smaller}
+:where(.tn-home,.tn-inner) :is(a){color:inherit}
+:where(.tn-home,.tn-inner) :is(a:hover){color:inherit}
 .tn-home .contact-form .is-invalid{border-color:#d3452e}
 .tn-home #s_website_form_result{display:block;margin-top:10px;font-size:13px;color:#d3452e}
 `;

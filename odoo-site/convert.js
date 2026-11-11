@@ -148,7 +148,13 @@ for (const file of files) {
   });
   for (const s of [...doc.querySelectorAll('script')]) {
     const t = s.textContent;
-    if (/cf-topic/.test(t)) footerScripts.set('topic', t.trim());
+    if (/cf-topic/.test(t)) {
+      // Odoo's form calls form.reset() when it starts, so also make the picked topic the default option.
+      const keep = 'for(var k=0;k<sel.options.length;k++)sel.options[k].defaultSelected=(k===i);sel.selectedIndex=i;';
+      const fixed = t.trim().replace('sel.selectedIndex=i;', keep);
+      if (fixed === t.trim()) warnings.push('topic picker: could not patch selectedIndex');
+      footerScripts.set('topic', fixed);
+    }
     else if (/\.ba-range/.test(t)) footerScripts.set('ba', t.trim());
     s.remove();
   }

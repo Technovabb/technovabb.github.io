@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Tech Nova's hands-on networking lab for trainee technicians.">
+<title>Tech Nova Network Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: a rack-label header strip, the six labs as numbered patch-panel ports, each lab a list of steps to tick together, then practice, then sign-off */
+:root{
+  --bg:#EDF0F5; --surface:#FFFFFF; --sunk:#E4E9F1; --ink:#16223B; --muted:#55617A; --line:#CBD3E0;
+  --accent:#1F3864; --accent-ink:#FFFFFF; --accent-soft:#DCE4F2;
+  --good:#1B7A4E; --good-soft:#DCF1E6; --warn:#94600F; --warn-soft:#F6EAD2; --bad:#B0392D; --bad-soft:#F8E0DC;
+  --term-bg:#0F1A2E; --term-ink:#D3E6DA; --term-dim:#8DA2BF;
+  --f-display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1422; --surface:#151F35; --sunk:#1B2742; --ink:#E5EBF5; --muted:#9CA9C0; --line:#2C3A5A;
+  --accent:#8EADE6; --accent-ink:#0D1422; --accent-soft:#22314F;
+  --good:#47C28C; --good-soft:#15352A; --warn:#E3AE55; --warn-soft:#3A2D14; --bad:#F07C6E; --bad-soft:#3F1E1B;
+  --term-bg:#080E1A; --term-ink:#D3E6DA; --term-dim:#7F93B0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1422; --surface:#151F35; --sunk:#1B2742; --ink:#E5EBF5; --muted:#9CA9C0; --line:#2C3A5A;
+  --accent:#8EADE6; --accent-ink:#0D1422; --accent-soft:#22314F;
+  --good:#47C28C; --good-soft:#15352A; --warn:#E3AE55; --warn-soft:#3A2D14; --bad:#F07C6E; --bad-soft:#3F1E1B;
+  --term-bg:#080E1A; --term-ink:#D3E6DA; --term-dim:#7F93B0; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:44px}
+h2{font-size:30px}
+h3{font-size:22px}
+p{margin:0}
+ol{margin:0}
+.muted{color:var(--muted)}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+code,.mono{font-family:var(--f-mono);font-size:.9em}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--accent);padding-bottom:12px}
+.top .titles{display:flex;flex-direction:column;gap:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{font-family:var(--f-mono);font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-variant-numeric:tabular-nums;white-space:nowrap;display:inline-flex;align-items:center;gap:7px}
+.pill b{color:var(--accent)}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.pill.live .dot{background:var(--good)}
+.pill.view .dot{background:var(--warn)}
+
+.ports{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:8px}
+.port{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 11px;position:relative}
+.port:hover{border-color:var(--accent)}
+.port .pn{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;color:var(--muted)}
+.port .pl{font-family:var(--f-display);font-weight:600;font-size:19px}
+.port .led{position:absolute;top:11px;right:11px;width:8px;height:8px;border-radius:50%;background:var(--line)}
+.port .led.half{background:var(--warn)}
+.port .led.on{background:var(--good)}
+.port[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.port[aria-current="page"] .pn{color:var(--accent-ink);opacity:.8}
+
+.nowbar{background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.nowbar a{color:var(--accent-ink);font-weight:700}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel>.head{display:flex;flex-direction:column;gap:4px}
+.sub{border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:12px}
+.practice{border-top:2px solid var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:600 15px var(--f-body);padding:9px 16px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none;display:inline-block}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.fb{padding:12px 14px;border-radius:8px;border-left:4px solid var(--line);background:var(--sunk);display:flex;flex-direction:column;gap:6px}
+.fb:empty{display:none}
+.fb.good{background:var(--good-soft);border-color:var(--good)}
+.fb.bad{background:var(--bad-soft);border-color:var(--bad)}
+.fb.info{background:var(--accent-soft);border-color:var(--accent)}
+.fb strong{font-weight:700}
+.tip{font-size:15px;color:var(--muted)}
+
+pre.term{margin:0;background:var(--term-bg);color:var(--term-ink);font-family:var(--f-mono);font-size:13px;line-height:1.55;padding:14px 16px;border-radius:8px;overflow-x:auto;white-space:pre}
+pre.term .dim{color:var(--term-dim)}
+pre.term.cmd{font-size:14.5px;padding:10px 14px}
+
+/* guided steps */
+.learn{font-size:17px;padding:12px 16px;background:var(--accent-soft);border-radius:8px}
+.steps{list-style:none;padding:0;display:flex;flex-direction:column;gap:10px}
+.step{border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--surface);min-width:0}
+.step.done{background:var(--good-soft);border-color:var(--good)}
+.step.now{box-shadow:0 0 0 3px var(--accent)}
+.stephead{display:flex;align-items:flex-start;gap:10px}
+.stephead input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--good);flex:none;cursor:pointer}
+.stephead label{flex:1;font-weight:700;font-size:17px;cursor:pointer;min-width:0}
+.sn{font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.06em;margin-right:4px}
+.here{font:600 13px var(--f-body);padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--accent);cursor:pointer;flex:none;white-space:nowrap}
+.here:hover:not(:disabled){border-color:var(--accent)}
+.here:disabled{opacity:.45;cursor:default}
+.nowtag{align-self:flex-start;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;background:var(--accent);color:var(--accent-ink);padding:2px 9px;border-radius:999px}
+.nlabel{font-size:14px;font-weight:600;color:var(--muted)}
+textarea{font:15px var(--f-body);padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:100%;resize:vertical;min-width:0}
+textarea:disabled,input:disabled{opacity:.6}
+.saved{font-size:12.5px;color:var(--muted);min-height:1em}
+
+.signbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;border:2px dashed var(--line);border-radius:10px;padding:14px 16px}
+.signbar.signed{border-style:solid;border-color:var(--good);background:var(--good-soft)}
+.signbar .st{font-weight:700}
+
+/* home */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
+.card{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.card .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;flex-wrap:wrap}
+.score{font-family:var(--f-mono);font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.score .ok{color:var(--good);font-weight:600}
+.bar{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--good)}
+.how{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--sunk)}
+.how ol{padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.scroll{overflow-x:auto;min-width:0}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.num{font-family:var(--f-mono);font-size:14px;white-space:nowrap}
+.rule{border:1px solid var(--warn);background:var(--warn-soft);border-radius:8px;padding:12px 14px}
+.rule b{color:var(--warn)}
+.confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* cable */
+.std{display:flex;flex-wrap:wrap;gap:14px}
+.std label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.plugwrap{display:flex;flex-direction:column;gap:6px;max-width:520px}
+.plug{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;padding:10px;background:var(--sunk);border:1px solid var(--line);border-radius:8px 8px 14px 14px}
+.pin{height:118px;border:1px dashed var(--line);border-radius:5px;background:var(--surface);display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px;cursor:pointer;color:var(--ink);font:inherit;min-width:0}
+.pin .num{font-family:var(--f-mono);font-size:12px;font-weight:600}
+.pin .sw{flex:1;width:62%;border-radius:3px;border:1px solid var(--line)}
+.pin .sw.empty{background:transparent;border-style:dashed}
+.pin .lbl{font-family:var(--f-mono);font-size:10.5px;white-space:nowrap}
+.pin.ok{border:2px solid var(--good)}
+.pin.no{border:2px solid var(--bad)}
+.plugnote{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.tray{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.chip .sw{width:30px;height:14px;border-radius:3px;border:1px solid var(--line)}
+
+/* options */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;font:inherit;padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.right{border:2px solid var(--good);background:var(--good-soft)}
+.opt.wrong{border:2px solid var(--bad);background:var(--bad-soft)}
+.symptom{font-size:17px;font-weight:600}
+
+/* subnet */
+.q{font-family:var(--f-mono);font-size:22px;font-weight:600;color:var(--accent);overflow-wrap:anywhere}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:14px;color:var(--muted);font-weight:600}
+input[type=text],select{font-family:var(--f-mono);font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);min-width:0;width:100%}
+input.ok{border:2px solid var(--good)}
+input.no{border:2px solid var(--bad)}
+.field .ans{font-family:var(--f-mono);font-size:13px;color:var(--bad)}
+.field .ans:empty{display:none}
+
+/* vlan */
+.vt td{vertical-align:middle}
+.vt select{width:auto;min-width:150px}
+.tags{display:flex;gap:10px;flex-wrap:nowrap}
+.tags label{display:flex;gap:4px;align-items:center;font-family:var(--f-mono);font-size:14px;cursor:pointer;white-space:nowrap}
+.res{font-size:14px;min-width:220px}
+.res.ok{color:var(--good);font-weight:600}
+.res.no{color:var(--bad)}
+.dev{font-weight:600;white-space:nowrap}
+
+/* wifi */
+.dbm{font-family:var(--f-mono);font-size:34px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.aps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.ap{border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px;background:var(--sunk)}
+.ap.nb{border-style:dashed}
+.ap .n{font-family:var(--f-display);font-weight:600;font-size:18px}
+@media (max-width:520px){h1{font-size:36px}h2{font-size:26px}.panel{padding:16px}.pin{height:104px}.stephead{flex-wrap:wrap}.here{margin-left:30px}}
+@media (prefers-reduced-motion:no-preference){.bar span{transition:width .3s ease}.step{transition:background-color .2s ease,border-color .2s ease}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="titles">
+      <span class="eyebrow">Tech Nova · Training bench</span>
+      <h1>Network Lab</h1>
+    </div>
+    <div class="chips">
+      <span class="pill live" id="sync-pill"><span class="dot"></span><span id="sync-text">Saves on this device</span></span>
+      <span class="pill" id="total-pill">Steps <b>0</b> / 0</span>
+    </div>
+  </header>
+
+  <nav class="ports" id="ports" aria-label="Labs"></nav>
+  
+
+  <!-- HOME -->
+  <section data-view="home" class="panel" id="view-home">
+    <div class="head">
+      <h2>Work through it together</h2>
+      <p class="muted">Six labs on what we do on every job. Do the steps together on the call: you do them on your own laptop and phone while Juwan talks you through. Then the practice questions, then send the lab to Juwan.</p>
+    </div>
+    <div class="how">
+      <h3>How it works</h3>
+      <ol>
+        <li>Your ticks and answers save on this phone or laptop, so use the same device each time.</li>
+        <li>Type answers into the boxes. They save when you tap or click away.</li>
+        <li>When you finish a lab, press <b>Send to Juwan</b> at the bottom. WhatsApp opens with your ticks and answers ready to send.</li>
+        <li>Juwan checks your work and signs the lab off on your training record.</li>
+      </ol>
+      <div class="field" style="max-width:340px"><label for="trainee-name">Your name (goes on what you send)</label><input type="text" id="trainee-name" autocomplete="name" spellcheck="false"></div>
+    </div>
+    <div class="cards" id="home-cards"></div>
+    <div class="rule"><b>Bench rule:</b> training gear is never plugged into the office network or a client's network. A lab router hands out addresses and can knock a whole office offline (call-out 9 in Fault finding shows how).</div>
+    <div class="sub">
+      <h3>The lab network plan</h3>
+      <p class="muted">The VLAN and Wi-Fi labs use this plan, the way we set up a small client site.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>VLAN</th><th>Name</th><th>Network</th><th>Gateway</th><th>What's on it</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td>Management</td><td class="num">192.168.1.0/24</td><td class="num">192.168.1.1</td><td>Gateway, switches, access points</td></tr>
+          <tr><td class="num">10</td><td>Staff</td><td class="num">10.10.10.0/24</td><td class="num">10.10.10.1</td><td>Laptops, printers, staff Wi-Fi</td></tr>
+          <tr><td class="num">20</td><td>Guest</td><td class="num">10.10.20.0/24</td><td class="num">10.10.20.1</td><td>Guest Wi-Fi, internet only</td></tr>
+          <tr><td class="num">30</td><td>Cameras</td><td class="num">10.10.30.0/24</td><td class="num">10.10.30.1</td><td>NVR and cameras, no internet</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="sub">
+      <h3>Progress report</h3>
+      <div class="row">
+        <button type="button" class="btn" id="send-all">Send all progress to Juwan</button>
+        <button type="button" class="btn ghost" id="copy-scores">Copy progress</button>
+        <button type="button" class="btn ghost" id="reset-scores">Reset my practice scores</button>
+      </div>
+      <div class="confirm" id="reset-confirm" hidden>
+        <span>Reset the practice scores on this device? Your ticked steps and answers stay.</span>
+        <button type="button" class="btn" id="reset-yes">Yes, reset</button>
+        <button type="button" class="btn ghost" id="reset-no">Cancel</button>
+      </div>
+      <div class="fb" id="copy-fb" aria-live="polite"></div>
+      <textarea id="copy-text" rows="10" hidden readonly></textarea>
+    </div>
+  </section>
+
+  <!-- 1 CABLE -->
+  <section data-view="cable" class="panel" hidden>
+    <div class="head"><span class="eyebrow">Lab 1</span><h2>Wire order</h2></div>
+    <div data-guide="cable"></div>
+    <div class="sub practice">
+      <h3>Practice: fill the plug</h3>
+      <p class="muted">Tap the wires in order to fill pins 1 to 8. Tap a pin to take its wire back out.</p>
+      <div class="std" role="radiogroup" aria-label="Wiring standard">
+        <label><input type="radio" name="std" id="std-b" value="B" checked> T568B (what we use)</label>
+        <label><input type="radio" name="std" id="std-a" value="A"> T568A</label>
+      </div>
+      <div class="plugwrap">
+        <div class="plug" id="cable-plug"></div>
+        <span class="plugnote">Plug held clip down, gold pins facing you: pin 1 is on the left.</span>
+      </div>
+      <div class="tray" id="cable-tray"></div>
+      <div class="row">
+        <button type="button" class="btn" id="cable-check">Check</button>
+        <button type="button" class="btn ghost" id="cable-reset">Start again</button>
+      </div>
+      <div class="fb" id="cable-fb" aria-live="polite"></div>
+    </div>
+    <div class="signbar" data-sign="cable"></div>
+  </section>
+
+  <!-- 2 IP -->
+  <section data-view="ip" class="panel" hidden>
+    <div class="head"><span class="eyebrow">Lab 2</span><h2>IP basics</h2></div>
+    <div data-guide="ip"></div>
+    <div class="sub practice">
+      <h3>Practice: read the screen</h3>
+      <p class="muted">Read it the way you would on a call-out, then say what's wrong.</p>
+      <p class="symptom" id="ip-sym"></p>
+      <pre class="term" id="ip-screen"></pre>
+      <div class="opts" id="ip-opts"></div>
+      <div class="fb" id="ip-fb" aria-live="polite"></div>
+      <div class="row"><button type="button" class="btn ghost" id="ip-next">Next screen</button></div>
+    </div>
+    <div class="sub">
+      <h3>Practice: same network?</h3>
+      <p class="muted">Two devices talk directly only if they're on the same network. If not, they need a router.</p>
+      <p class="q" id="same-q"></p>
+      <div class="row">
+        <button type="button" class="btn" id="same-yes">Same network</button>
+        <button type="button" class="btn" id="same-no">Different networks</button>
+      </div>
+      <div class="fb" id="same-fb" aria-live="polite"></div>
+      <div class="row"><button type="button" class="btn ghost" id="same-next">Next pair</button></div>
+    </div>
+    <div class="signbar" data-sign="ip"></div>
+  </section>
+
+  <!-- 3 SUBNET -->
+  <section data-view="subnet" class="panel" hidden>
+    <div class="head"><span class="eyebrow">Lab 3</span><h2>Subnetting</h2></div>
+    <div data-guide="subnet"></div>
+    <div class="sub practice">
+      <h3>Practice: work it out</h3>
+      <p class="muted">Use the block-size method: 256 minus the mask number in the octet that isn't 255 or 0.</p>
+      <p class="q" id="sub-q"></p>
+      <div class="fields">
+        <div class="field"><label for="sub-mask">Subnet mask</label><input type="text" id="sub-mask" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="255.255.255.0"><span class="ans" id="sub-mask-a"></span></div>
+        <div class="field"><label for="sub-net">Network address</label><input type="text" id="sub-net" inputmode="decimal" autocomplete="off" spellcheck="false"><span class="ans" id="sub-net-a"></span></div>
+        <div class="field"><label for="sub-first">First usable</label><input type="text" id="sub-first" inputmode="decimal" autocomplete="off" spellcheck="false"><span class="ans" id="sub-first-a"></span></div>
+        <div class="field"><label for="sub-last">Last usable</label><input type="text" id="sub-last" inputmode="decimal" autocomplete="off" spellcheck="false"><span class="ans" id="sub-last-a"></span></div>
+        <div class="field"><label for="sub-bc">Broadcast</label><input type="text" id="sub-bc" inputmode="decimal" autocomplete="off" spellcheck="false"><span class="ans" id="sub-bc-a"></span></div>
+        <div class="field"><label for="sub-hosts">Usable hosts</label><input type="text" id="sub-hosts" inputmode="numeric" autocomplete="off" spellcheck="false"><span class="ans" id="sub-hosts-a"></span></div>
+      </div>
+      <div class="row">
+        <button type="button" class="btn" id="sub-check">Check</button>
+        <button type="button" class="btn ghost" id="sub-show">Show the working</button>
+        <button type="button" class="btn ghost" id="sub-next">New address</button>
+      </div>
+      <div class="fb" id="sub-fb" aria-live="polite"></div>
+    </div>
+    <div class="signbar" data-sign="subnet"></div>
+  </section>
+
+  <!-- 4 VLAN -->
+  <section data-view="vlan" class="panel" hidden>
+    <div class="head"><span class="eyebrow">Lab 4</span><h2>VLAN ports</h2></div>
+    <div data-guide="vlan"></div>
+    <div class="sub practice">
+      <h3>Practice: set up the switch</h3>
+      <p class="muted">The switch is fresh out of the box: every port is untagged on VLAN 1. Set each port so its device lands on the right network from the lab plan.</p>
+      <div class="scroll"><table class="vt">
+        <thead><tr><th>Port</th><th>Device</th><th>Untagged (native)</th><th>Tagged</th><th>Result</th></tr></thead>
+        <tbody id="vlan-rows"></tbody>
+      </table></div>
+      <div class="row">
+        <button type="button" class="btn" id="vlan-check">Check ports</button>
+        <button type="button" class="btn ghost" id="vlan-next">New switch</button>
+      </div>
+      <div class="fb" id="vlan-fb" aria-live="polite"></div>
+    </div>
+    <div class="signbar" data-sign="vlan"></div>
+  </section>
+
+  <!-- 5 WIFI -->
+  <section data-view="wifi" class="panel" hidden>
+    <div class="head"><span class="eyebrow">Lab 5</span><h2>Wi-Fi</h2></div>
+    <div data-guide="wifi"></div>
+    <div class="sub practice">
+      <h3>Practice: judge the signal</h3>
+      <p class="muted" id="sig-where"></p>
+      <p class="dbm" id="sig-q"></p>
+      <div class="row">
+        <button type="button" class="btn" data-sig="good">Good for work</button>
+        <button type="button" class="btn" data-sig="ok">Okay, browsing only</button>
+        <button type="button" class="btn" data-sig="poor">Poor</button>
+      </div>
+      <div class="fb" id="sig-fb" aria-live="polite"></div>
+      <div class="row"><button type="button" class="btn ghost" id="sig-next">Next reading</button></div>
+    </div>
+    <div class="sub">
+      <h3>Practice: 2.4 GHz channel plan</h3>
+      <p class="muted" id="ch-brief"></p>
+      <div class="aps" id="ch-aps"></div>
+      <div class="row">
+        <button type="button" class="btn" id="ch-check">Check channels</button>
+        <button type="button" class="btn ghost" id="ch-next">New site</button>
+      </div>
+      <div class="fb" id="ch-fb" aria-live="polite"></div>
+    </div>
+    <div class="signbar" data-sign="wifi"></div>
+  </section>
+
+  <!-- 6 FAULTS -->
+  <section data-view="faults" class="panel" hidden>
+    <div class="head"><span class="eyebrow">Lab 6</span><h2>Fault finding</h2></div>
+    <div data-guide="faults"></div>
+    <div class="sub practice">
+      <h3>Practice: call-outs</h3>
+      <span class="eyebrow" id="flt-count"></span>
+      <p class="symptom" id="flt-sym"></p>
+      <pre class="term" id="flt-clue"></pre>
+      <p><strong>What's the most likely cause?</strong></p>
+      <div class="opts" id="flt-opts"></div>
+      <div class="fb" id="flt-fb" aria-live="polite"></div>
+      <div class="row"><button type="button" class="btn ghost" id="flt-next">Next call-out</button></div>
+    </div>
+    <div class="signbar" data-sign="faults"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var rnd=function(n){return Math.floor(Math.random()*n)};
+var pick=function(a){return a[rnd(a.length)]};
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rnd(i+1);var t=a[i];a[i]=a[j];a[j]=t}return a}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+var LABS=[
+  {id:"cable",n:1,name:"Wire order",blurb:"T568B, the order we terminate every jack and plug to."},
+  {id:"ip",n:2,name:"IP basics",blurb:"Read your own laptop's settings and test each layer with ping, nslookup and tracert."},
+  {id:"subnet",n:3,name:"Subnetting",blurb:"From one address and mask, work out the network, broadcast and usable range."},
+  {id:"vlan",n:4,name:"VLAN ports",blurb:"Keep staff, guests and cameras apart, and set switch ports to match."},
+  {id:"wifi",n:5,name:"Wi-Fi",blurb:"Measure your own Wi-Fi with a phone app and plan channels that don't clash."},
+  {id:"faults",n:6,name:"Fault finding",blurb:"The bottom-up method, then real call-outs to solve."}
+];
+
+/* ---------- the guided steps ---------- */
+var GUIDE={
+  cable:{learn:"T568B is the order we terminate every jack and plug to. Count pins 1 to 8 from the left, with the clip facing down and the gold pins towards you.",steps:[
+    {id:"c1",t:"Learn the pattern",d:"Juwan walks through it: every odd pin (1, 3, 5, 7) is a white-striped wire. Orange pair on 1 and 2, green split across 3 and 6, blue in the middle on 4 and 5, brown last on 7 and 8."},
+    {id:"c2",t:"Say it from memory",d:"Without looking, say all 8 colours in order to Juwan."},
+    {id:"c3",t:"Fill the plug below",d:"Use the practice below until you get it right 3 times in a row."},
+    {id:"c4",t:"Make a real lead (if you have cable and plugs)",d:"Strip about 25 mm of jacket, untwist and flatten the pairs, put them in T568B order, trim straight to about 13 mm, push them fully into the plug and crimp. Hold it up to the camera so Juwan can check the order through the clear plug.",note:"Did it pass the tester? What went wrong, if anything?"}
+  ]},
+  ip:{learn:"Every device on a network needs four things: an IP address, a subnet mask, a default gateway (the way out to the internet) and a DNS server (turns names into addresses). DHCP hands them out automatically.",steps:[
+    {id:"i1",t:"Open Command Prompt",d:"On your laptop, press the Windows key, type cmd and press Enter."},
+    {id:"i2",t:"Read your settings",d:"Find your Wi-Fi adapter in the list (or Ethernet if you're plugged in).",cmd:"ipconfig /all",note:"Write down your IPv4 Address, Subnet Mask, Default Gateway, DNS Servers, and whether DHCP is Enabled:"},
+    {id:"i3",t:"Ping your gateway",d:"Type ping, a space, then your Default Gateway from step 2. Replies mean your laptop can reach your router.",cmd:"ping 192.168.1.1",note:"Did it reply? How many ms did the replies take?"},
+    {id:"i4",t:"Ping the internet by number",d:"Replies prove the internet works, without needing DNS.",cmd:"ping 8.8.8.8"},
+    {id:"i5",t:"Test DNS",d:"An address coming back means DNS is turning the name into a number.",cmd:"nslookup technovabb.com",note:"Which DNS server answered (the Server line)?"},
+    {id:"i6",t:"Trace the route",d:"Each line is a router your traffic passes through on the way. The first one is your own router.",cmd:"tracert 8.8.8.8",note:"How many hops to 8.8.8.8?"},
+    {id:"i7",t:"See your neighbours",d:"This lists the devices your laptop has talked to on your network, with their IP and MAC addresses.",cmd:"arp -a",note:"How many “dynamic” entries are there?"},
+    {id:"i8",t:"Explain it back",d:"Tell Juwan what you'd see for each: no address (169.254 address), no internet (gateway replies, 8.8.8.8 doesn't), and no DNS (8.8.8.8 replies, names fail)."}
+  ]},
+  subnet:{learn:"The number after the slash says how much of the address is the network. /24 means 255.255.255.0: 256 addresses, 254 usable, because the first is the network address and the last is the broadcast.",steps:[
+    {id:"s1",t:"Worked example with Juwan",d:"192.168.1.77/26. The mask is 255.255.255.192. Block size is 256 − 192 = 64, so networks start at 0, 64, 128 and 192. 77 falls in the 64 block. Network 192.168.1.64, first usable .65, last usable .126, broadcast .127, so 62 usable addresses."},
+    {id:"s2",t:"Your home network",d:"Take your address and mask from Lab 2 and work out the same things for your own network.",note:"Network address, broadcast, and how many devices it can hold:"},
+    {id:"s3",t:"Practise below",d:"Get 5 right in a row. When you're stuck, press Show the working, then try a new address."},
+    {id:"s4",t:"Why it matters",d:"Tell Juwan why a printer set to 192.168.0.100 can't be reached from a laptop on 10.10.10.0/24."}
+  ]},
+  vlan:{learn:"A VLAN splits one switch into separate networks. We use them to keep staff, guests and cameras apart. The plan we use is on the home page.",steps:[
+    {id:"v1",t:"Go through the lab plan",d:"Open the home page and go through the plan with Juwan: VLAN 1 Management, 10 Staff, 20 Guest, 30 Cameras. Who goes on each, and why cameras get no internet."},
+    {id:"v2",t:"Untagged and tagged",d:"Untagged (native): the port belongs to one VLAN and the device never knows. Tagged: several VLANs share one cable, each one labelled. We tag ports to gateways, access points and other switches.",note:"In your own words, when do you tag a port?"},
+    {id:"v3",t:"Set up the switch below",d:"Get all 8 ports right on two switches in a row."},
+    {id:"v4",t:"A real call-out",d:"On a client site, the staff Wi-Fi stopped working after a switch change. One port's native VLAN was set wrong.",note:"What would you check first, and why?"}
+  ]},
+  wifi:{learn:"Wi-Fi signal is measured in dBm. It's always negative, and closer to 0 is stronger. Aim for −67 or better where people work. 2.4 GHz reaches further; 5 GHz is faster.",steps:[
+    {id:"w1",t:"Get the app",d:"Install WiFiman on your phone. It's free, from Ubiquiti, who make the UniFi gear we install."},
+    {id:"w2",t:"Next to your router",d:"Stand beside your router and read your Wi-Fi's signal and channel.",note:"Signal (dBm) and channel:"},
+    {id:"w3",t:"The furthest room",d:"Walk to the furthest room from the router and read it again.",note:"Signal there, and is it good, okay or poor?"},
+    {id:"w4",t:"Your neighbours",d:"Look at the list of 2.4 GHz networks around you.",note:"Which channels are they on? Which channel is busiest?"},
+    {id:"w5",t:"Practise below",d:"Judge 5 signal readings in a row, then make two clean channel plans."}
+  ]},
+  faults:{learn:"Always work from the bottom up: 1 power and lights, 2 cable and port, 3 IP address, 4 gateway, 5 DNS, 6 the app itself. Most faults turn up in the first three.",steps:[
+    {id:"f1",t:"Say the order",d:"Say the six checks in order to Juwan, and what you'd do at each one."},
+    {id:"f2",t:"When nothing answers",d:"Ping an address on your network that nothing uses: your gateway's address with the last number changed to 254. Compare it with pinging your real gateway.",cmd:"ping 192.168.1.254",note:"What did you see? “Request timed out” or “Destination host unreachable” means nothing answered."},
+    {id:"f3",t:"Work the call-outs below",d:"Go through all 13 call-outs. Aim for 10 or more right."},
+    {id:"f4",t:"Write a job log",d:"Pick one call-out and write it up the way you would on a job.",note:"The problem, what you checked, the fault, and the fix:"}
+  ]}
+};
+
+/* ---------- practice scores (this device only) ---------- */
+var KEY="tn-network-lab-v1", scores={};
+try{scores=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){scores={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(scores))}catch(e){}}
+function sc(id){return scores[id]||{c:0,a:0}}
+function rec(id,ok){var s=scores[id]||(scores[id]={c:0,a:0});s.a++;if(ok)s.c++;save();renderScores()}
+
+/* ---------- steps and answers (saved on this device) ---------- */
+var STORE={steps:{}};
+var LKEY="tn-network-lab-steps-v1";
+try{var lo=JSON.parse(localStorage.getItem(LKEY));if(lo&&lo.steps)STORE.steps=lo.steps}catch(e){}
+function localSave(){try{localStorage.setItem(LKEY,JSON.stringify({steps:STORE.steps}));return true}catch(e){return false}}
+function writeStep(lab,id,patch){
+  var k=lab+"-"+id,cur=STORE.steps[k]||{},next={done:patch.done!==undefined?!!patch.done:!!cur.done,note:patch.note!==undefined?patch.note:(cur.note||""),at:new Date().toISOString()};
+  STORE.steps[k]=next;applyAll();
+  flash(lab,id,localSave()?"Saved":"Couldn't save on this device. Copy your answers before you close the page.");
+}
+function flash(lab,id,msg){var s=document.getElementById("saved-"+lab+"-"+id);if(s){s.textContent=msg;clearTimeout(s._t);s._t=setTimeout(function(){s.textContent=""},2500)}}
+
+function stepCounts(lab){var s=GUIDE[lab].steps,d=s.filter(function(x){var v=STORE.steps[lab+"-"+x.id];return v&&v.done}).length;return {d:d,t:s.length}}
+function fmtDate(iso){try{return new Date(iso).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}catch(e){return ""}}
+function labName(id){var l=LABS.filter(function(x){return x.id===id})[0];return l?"Lab "+l.n+", "+l.name:""}
+
+function renderGuides(){
+  Object.keys(GUIDE).forEach(function(lab){
+    var g=GUIDE[lab],el=document.querySelector('[data-guide="'+lab+'"]');
+    el.innerHTML='<p class="learn">'+esc(g.learn)+'</p><ol class="steps">'+g.steps.map(function(s,i){
+      var sid=lab+"-"+s.id;
+      return '<li class="step" id="step-'+sid+'" data-lab="'+lab+'" data-step="'+s.id+'">'+
+        
+        '<div class="stephead"><input type="checkbox" id="st-'+sid+'" data-tick><label for="st-'+sid+'"><span class="sn">STEP '+(i+1)+'</span>'+esc(s.t)+'</label></div>'+
+        '<p>'+esc(s.d)+'</p>'+(s.cmd?'<pre class="term cmd"><span class="dim">C:\\&gt;</span> '+esc(s.cmd)+'</pre>':'')+
+        (s.note?'<label class="nlabel" for="nt-'+sid+'">'+esc(s.note)+'</label><textarea id="nt-'+sid+'" rows="2" data-note></textarea>':'')+
+        '<span class="saved" id="saved-'+sid+'" aria-live="polite"></span></li>';
+    }).join("")+'</ol>';
+  });
+}
+document.addEventListener("change",function(e){
+  var t=e.target,li=t.closest&&t.closest(".step");if(!li)return;
+  var lab=li.getAttribute("data-lab"),id=li.getAttribute("data-step");
+  if(t.hasAttribute("data-tick"))writeStep(lab,id,{done:t.checked});
+  else if(t.hasAttribute("data-note")){var v=t.value.slice(0,4000);if(v!==((STORE.steps[lab+"-"+id]||{}).note||""))writeStep(lab,id,{note:v})}
+});
+document.addEventListener("click",function(e){
+  var b=e.target.closest&&e.target.closest("[data-send]");
+  if(b)sendWA(intro()+labReport(b.getAttribute("data-send")),"#send-fb-"+b.getAttribute("data-send"));
+});
+
+function labNum(id){return LABS.filter(function(x){return x.id===id})[0].n}
+function applyAll(){
+  var total=0,done=0;
+  Object.keys(GUIDE).forEach(function(lab){
+    GUIDE[lab].steps.forEach(function(s){
+      var sid=lab+"-"+s.id,v=STORE.steps[sid]||{},li=document.getElementById("step-"+sid);if(!li)return;
+      total++;if(v.done)done++;
+      li.classList.toggle("done",!!v.done);
+      document.getElementById("st-"+sid).checked=!!v.done;
+      var ta=document.getElementById("nt-"+sid);
+      if(ta&&document.activeElement!==ta)ta.value=v.note||"";
+    });
+    var bar=document.querySelector('[data-sign="'+lab+'"]'),c=stepCounts(lab),n=labNum(lab),all=c.d===c.t;
+    bar.classList.toggle("signed",all);
+    var txt='<span><span class="st">'+(all?"All steps done.":"Finished this lab?")+'</span> <span class="muted">'+c.d+' of '+c.t+' steps ticked.</span></span>';
+    if(bar.getAttribute("data-built")!=="1"){
+      bar.innerHTML='<span class="sbtext"></span><button type="button" class="btn" data-send="'+lab+'">Send Lab '+n+' to Juwan</button><div class="fb" id="send-fb-'+lab+'" aria-live="polite" style="flex-basis:100%"></div>';
+      bar.setAttribute("data-built","1");
+    }
+    bar.querySelector(".sbtext").innerHTML=txt;
+  });
+  $("#total-pill").innerHTML="Steps <b>"+done+"</b> / "+total;
+  renderScores();
+}
+
+function renderScores(){
+  LABS.forEach(function(l){
+    var s=sc(l.id),c=stepCounts(l.id);
+    var led=document.querySelector('[data-led="'+l.id+'"]');
+    if(led)led.className="led"+(c.d===c.t?" on":c.d>0?" half":"");
+    var t=document.querySelector('[data-score="'+l.id+'"]');
+    if(t)t.innerHTML='<span>Steps '+c.d+' of '+c.t+'</span><span>Practice '+(s.a?s.c+' of '+s.a+' right':'not started')+'</span>';
+    var b=document.querySelector('[data-bar="'+l.id+'"]');
+    if(b)b.style.width=Math.round(100*c.d/c.t)+"%";
+  });
+}
+
+/* ---------- nav + home ---------- */
+$("#ports").innerHTML=LABS.map(function(l){
+  return '<a class="port" href="#'+l.id+'" data-port="'+l.id+'"><span class="pn">PORT '+l.n+'</span><span class="pl">'+l.name+'</span><span class="led" data-led="'+l.id+'"></span></a>';
+}).join("");
+$("#home-cards").innerHTML=LABS.map(function(l){
+  return '<div class="card"><span class="eyebrow">Lab '+l.n+'</span><h3>'+l.name+'</h3><p class="muted">'+l.blurb+'</p><div class="bar"><span data-bar="'+l.id+'" style="width:0"></span></div><div class="meta"><span class="score" data-score="'+l.id+'"></span><a class="btn ghost" href="#'+l.id+'">Open</a></div></div>';
+}).join("");
+
+var NKEY="tn-network-lab-name",nameEl=$("#trainee-name");
+try{nameEl.value=localStorage.getItem(NKEY)||""}catch(e){}
+nameEl.addEventListener("change",function(){try{localStorage.setItem(NKEY,nameEl.value.trim())}catch(e){}});
+function intro(){var n=nameEl.value.trim();return "Hi Juwan, here's my Network Lab progress"+(n?" ("+n+")":"")+".\n\n"}
+function labReport(lab){
+  var l=LABS.filter(function(x){return x.id===lab})[0],s=sc(lab),c=stepCounts(lab);
+  var out=["Lab "+l.n+": "+l.name+" (steps "+c.d+" of "+c.t+", practice "+(s.a?s.c+" of "+s.a+" right":"not started")+")"];
+  GUIDE[lab].steps.forEach(function(st,i){var v=STORE.steps[lab+"-"+st.id]||{};out.push((v.done?"[x] ":"[ ] ")+"Step "+(i+1)+": "+st.t+(v.note?"\n      "+v.note.replace(/\n/g,"\n      "):""))});
+  return out.join("\n");
+}
+function fullReport(){return intro()+LABS.map(function(l){return labReport(l.id)}).join("\n\n")}
+var WA="12462308303";
+function copyText(text,fbSel,okMsg){
+  var fbx=$(fbSel),ta=$("#copy-text");
+  function fallback(){ta.hidden=false;ta.value=text;ta.focus();ta.select();fbx.className="fb info";fbx.textContent="Select the text in the box on the home page and copy it."}
+  try{navigator.clipboard.writeText(text).then(function(){ta.hidden=true;fbx.className="fb good";fbx.textContent=okMsg},fallback)}catch(e){fallback()}
+}
+function sendWA(text,fbSel){
+  var url="https://wa.me/"+WA+"?text="+encodeURIComponent(text);
+  if(url.length>7000){copyText(text,fbSel,"That's too long for one WhatsApp link, so it's copied instead. Open WhatsApp, start a chat with Tech Nova on (246) 230-8303 and paste it.");return}
+  var w=window.open(url,"_blank","noopener");
+  if(!w)location.href=url;
+  var fbx=$(fbSel);fbx.className="fb info";fbx.textContent="WhatsApp is opening with your progress. Press send there. If it doesn't open, message (246) 230-8303.";
+}
+$("#send-all").addEventListener("click",function(){sendWA(fullReport(),"#copy-fb")});
+$("#copy-scores").addEventListener("click",function(){copyText(fullReport(),"#copy-fb","Copied. Paste it into WhatsApp to send it.")});
+$("#reset-scores").addEventListener("click",function(){$("#reset-confirm").hidden=false});
+$("#reset-no").addEventListener("click",function(){$("#reset-confirm").hidden=true});
+$("#reset-yes").addEventListener("click",function(){scores={};save();renderScores();$("#reset-confirm").hidden=true;var f=$("#copy-fb");f.className="fb info";f.textContent="Practice scores reset."});
+
+/* ---------- router ---------- */
+var MODS={}, started={}, pendingStep=null;
+function show(view,scroll){
+  document.querySelectorAll("[data-view]").forEach(function(s){s.hidden=s.getAttribute("data-view")!==view});
+  document.querySelectorAll("[data-port]").forEach(function(p){if(p.getAttribute("data-port")===view)p.setAttribute("aria-current","page");else p.removeAttribute("aria-current")});
+  if(MODS[view]&&!started[view]){started[view]=1;MODS[view]()}
+  applyAll();
+  var target=pendingStep&&document.getElementById("step-"+view+"-"+pendingStep);pendingStep=null;
+  if(target)target.scrollIntoView({block:"center"});else if(scroll)window.scrollTo(0,0);
+}
+function route(scroll){var h=location.hash.replace("#","");show(LABS.some(function(l){return l.id===h})?h:"home",scroll)}
+window.addEventListener("hashchange",function(){route(true)});
+
+function fb(id,kind,html){var e=$(id);e.className="fb "+kind;e.innerHTML=html}
+function clearFb(id){var e=$(id);e.className="fb";e.innerHTML=""}
+
+/* ---------- 1. wire order ---------- */
+var W={
+  wo:{name:"White-orange",short:"W-O",c:"#E8792B",s:1}, o:{name:"Orange",short:"O",c:"#E8792B"},
+  wg:{name:"White-green",short:"W-G",c:"#2E9E4F",s:1}, g:{name:"Green",short:"G",c:"#2E9E4F"},
+  wbl:{name:"White-blue",short:"W-BL",c:"#2F6FD0",s:1}, bl:{name:"Blue",short:"BL",c:"#2F6FD0"},
+  wbr:{name:"White-brown",short:"W-BR",c:"#7A4A2A",s:1}, br:{name:"Brown",short:"BR",c:"#7A4A2A"}
+};
+function sw(k){return W[k].s?"background:repeating-linear-gradient(135deg,#F4F3EC 0 5px,"+W[k].c+" 5px 9px)":"background:"+W[k].c}
+var ORDER={B:["wo","o","wg","bl","wbl","g","wbr","br"],A:["wg","g","wo","bl","wbl","o","wbr","br"]};
+MODS.cable=function(){
+  var std="B",slots,tray,checked=false;
+  function reset(){slots=[null,null,null,null,null,null,null,null];tray=shuffle(Object.keys(W));checked=false;draw();clearFb("#cable-fb")}
+  function draw(marks){
+    $("#cable-plug").innerHTML=slots.map(function(k,i){
+      var cls="pin"+(marks?(marks[i]?" ok":" no"):"");
+      return '<button type="button" class="'+cls+'" data-pin="'+i+'" aria-label="Pin '+(i+1)+(k?": "+W[k].name:": empty")+'"><span class="num">'+(i+1)+'</span>'+(k?'<span class="sw" style="'+sw(k)+'"></span><span class="lbl">'+W[k].short+'</span>':'<span class="sw empty"></span><span class="lbl">&nbsp;</span>')+'</button>';
+    }).join("");
+    $("#cable-tray").innerHTML=tray.length?tray.map(function(k){return '<button type="button" class="chip" data-wire="'+k+'"><span class="sw" style="'+sw(k)+'"></span>'+W[k].name+'</button>'}).join(""):'<p class="muted">All 8 wires are in. Press Check.</p>';
+  }
+  $("#cable-tray").addEventListener("click",function(e){
+    var b=e.target.closest("[data-wire]");if(!b)return;var k=b.getAttribute("data-wire");
+    var i=slots.indexOf(null);if(i<0)return;slots[i]=k;tray.splice(tray.indexOf(k),1);checked=false;draw();clearFb("#cable-fb");
+  });
+  $("#cable-plug").addEventListener("click",function(e){
+    var b=e.target.closest("[data-pin]");if(!b)return;var i=+b.getAttribute("data-pin");
+    if(!slots[i])return;tray.push(slots[i]);slots[i]=null;checked=false;draw();clearFb("#cable-fb");
+  });
+  $("#cable-check").addEventListener("click",function(){
+    if(slots.indexOf(null)>=0){fb("#cable-fb","info","Place all 8 wires first.");return}
+    var want=ORDER[std],marks=slots.map(function(k,i){return k===want[i]}),ok=marks.every(Boolean);
+    draw(marks);
+    if(!checked){rec("cable",ok);checked=true}
+    var tip=std==="B"?"Every odd pin (1, 3, 5, 7) is a white-striped wire. Orange pair on 1 and 2, blue in the middle on 4 and 5, green split across 3 and 6, brown last on 7 and 8.":"T568A is T568B with the orange and green pairs swapped: green on 1 and 2, orange split across 3 and 6.";
+    if(ok)fb("#cable-fb","good","<strong>All 8 correct.</strong><span>"+tip+"</span>");
+    else fb("#cable-fb","bad","<strong>"+marks.filter(function(m){return !m}).length+" pins wrong.</strong><span>Correct T568"+std+" order: "+want.map(function(k,i){return (i+1)+" "+W[k].name}).join(", ")+".</span><span>"+tip+"</span>");
+  });
+  $("#cable-reset").addEventListener("click",reset);
+  document.querySelectorAll('input[name="std"]').forEach(function(r){r.addEventListener("change",function(){std=r.value;reset()})});
+  reset();
+};
+
+/* ---------- IP helpers ---------- */
+function ipToInt(s){return s.split(".").reduce(function(a,o){return a*256+(+o)},0)>>>0}
+function intToIp(n){n=n>>>0;return [n>>>24,(n>>>16)&255,(n>>>8)&255,n&255].join(".")}
+function maskOf(p){return p===0?0:(0xFFFFFFFF<<(32-p))>>>0}
+function netOf(ip,p){return (ip&maskOf(p))>>>0}
+function bcOf(ip,p){return (netOf(ip,p)|(~maskOf(p)>>>0))>>>0}
+
+/* ---------- 2. IP basics ---------- */
+MODS.ip=function(){
+  var OPTS=["Nothing wrong here","It didn't get an address from DHCP","The address and the gateway are on different networks","There's no default gateway","It's a DNS problem"];
+  var cur,answered;
+  function mac(){var h="";for(var i=0;i<6;i++){h+=(i?"-":"")+("0"+rnd(256).toString(16)).slice(-2).toUpperCase()}return h}
+  function ln(label,val){var s="   "+label;while(s.length<39)s+=(s.length%2?" ":".");return s+": "+val}
+  function scenario(){
+    var host=20+rnd(200),t=pick(["ok","apipa","wrongnet","nogw","dns","ok"]);
+    var L={dhcp:"Yes",ip:"10.10.10."+host,mask:"255.255.255.0",gw:"10.10.10.1",dhcps:"10.10.10.1",dns:"10.10.10.1",auto:false};
+    var r={};
+    if(t==="ok"){r.sym="The laptop browses fine. Juwan asks you to check its settings anyway.";r.a=0;r.why="Address, gateway and DNS all sit on 10.10.10.0/24, and DHCP handed them out. Nothing is wrong."}
+    if(t==="apipa"){L.ip="169.254."+(1+rnd(254))+"."+(1+rnd(254));L.mask="255.255.0.0";L.gw="";L.dhcps="";L.dns="";L.auto=true;r.sym="No internet, and it can't reach the printer either. The port light is on.";r.a=1;r.why="An address starting 169.254 is one Windows gives itself when no DHCP server answers. Check the switch port's VLAN, then that DHCP is on for that network."}
+    if(t==="wrongnet"){L.dhcp="No";L.ip="10.10.20."+host;L.dhcps=null;L.dns="1.1.1.1";r.sym="Someone typed in a static address by hand. Now it can't reach anything.";r.a=2;r.why="The address is on 10.10.20.0/24 but the gateway 10.10.10.1 is on 10.10.10.0/24. A device can only use a gateway on its own network. Fix the address or the gateway."}
+    if(t==="nogw"){L.dhcp="No";L.gw="";L.dhcps=null;L.dns="1.1.1.1";r.sym="It prints to the office printer fine, but there's no internet.";r.a=3;r.why="With no default gateway the laptop can reach devices on its own network, like the printer, but has no way out to the internet. Add the gateway, 10.10.10.1."}
+    if(t==="dns"){L.dhcp="No";L.dhcps=null;L.dns="";r.sym="ping 8.8.8.8 gets replies, but websites say “Server not found”.";r.a=4;r.why="Reaching 8.8.8.8 by number proves the cable, address and gateway work. Names fail because no DNS server is set. Add the gateway or 1.1.1.1 as DNS."}
+    var out=['<span class="dim">C:\\&gt; ipconfig /all</span>','','Ethernet adapter Ethernet:','',
+      ln("Description","Intel(R) Ethernet Connection"),ln("Physical Address",mac()),ln("DHCP Enabled",L.dhcp),
+      ln(L.auto?"Autoconfiguration IPv4 Address":"IPv4 Address",L.ip+"(Preferred)"),ln("Subnet Mask",L.mask),ln("Default Gateway",L.gw)];
+    if(L.dhcps!==null)out.push(ln("DHCP Server",L.dhcps));
+    out.push(ln("DNS Servers",L.dns));
+    r.screen=out.join("\n");return r;
+  }
+  function next(){
+    cur=scenario();answered=false;
+    $("#ip-sym").textContent=cur.sym;$("#ip-screen").innerHTML=cur.screen;
+    $("#ip-opts").innerHTML=OPTS.map(function(o,i){return '<button type="button" class="opt" data-o="'+i+'">'+esc(o)+'</button>'}).join("");
+    clearFb("#ip-fb");
+  }
+  $("#ip-opts").addEventListener("click",function(e){
+    var b=e.target.closest("[data-o]");if(!b||answered)return;answered=true;
+    var i=+b.getAttribute("data-o"),ok=i===cur.a;rec("ip",ok);
+    document.querySelectorAll("#ip-opts .opt").forEach(function(x,j){x.disabled=true;if(j===cur.a)x.classList.add("right");else if(j===i)x.classList.add("wrong")});
+    fb("#ip-fb",ok?"good":"bad","<strong>"+(ok?"Right.":"Not quite. The answer: "+esc(OPTS[cur.a])+".")+"</strong><span>"+esc(cur.why)+"</span>");
+  });
+  $("#ip-next").addEventListener("click",next);
+
+  var sq,sAns;
+  function sameNext(){
+    var p=pick([24,24,25,26,26,27,28,16]),size=Math.pow(2,32-p),base;
+    base=p===16?ipToInt("10."+(10+rnd(200))+".0.0"):ipToInt("10.10.0.0")+rnd(65536);
+    var net=netOf(base,p),a=net+1+rnd(size-2),same=Math.random()<0.5,b;
+    if(same){do{b=net+1+rnd(size-2)}while(b===a)}
+    else{var n2=(rnd(2)&&net-size>=ipToInt("10.0.0.0"))?net-size:net+size;b=n2+1+rnd(size-2)}
+    sq={a:a>>>0,b:b>>>0,p:p};sAns=same;
+    $("#same-q").textContent=intToIp(sq.a)+"/"+p+"   and   "+intToIp(sq.b)+"/"+p;
+    $("#same-yes").disabled=false;$("#same-no").disabled=false;clearFb("#same-fb");
+  }
+  function sameAnswer(said){
+    $("#same-yes").disabled=true;$("#same-no").disabled=true;
+    var ok=said===sAns;rec("ip",ok);
+    var p=sq.p,na=netOf(sq.a,p),nb=netOf(sq.b,p),size=Math.pow(2,32-p);
+    var why="With /"+p+" each network is "+size.toLocaleString("en-US")+" addresses. "+intToIp(sq.a)+" is in "+intToIp(na)+" to "+intToIp(bcOf(sq.a,p))+". "+intToIp(sq.b)+" is in "+intToIp(nb)+" to "+intToIp(bcOf(sq.b,p))+". "+(sAns?"Same network, so they talk directly.":"Different networks, so they need a router between them.");
+    fb("#same-fb",ok?"good":"bad","<strong>"+(ok?"Right.":"Not quite.")+"</strong><span>"+why+"</span>");
+  }
+  $("#same-yes").addEventListener("click",function(){sameAnswer(true)});
+  $("#same-no").addEventListener("click",function(){sameAnswer(false)});
+  $("#same-next").addEventListener("click",sameNext);
+  next();sameNext();
+};
+
+/* ---------- 3. subnetting ---------- */
+MODS.subnet=function(){
+  var cur,checked;
+  var F=["mask","net","first","last","bc","hosts"];
+  function gen(){
+    var p=pick([24,25,26,26,27,27,28,29,30,23,22]),ip,base=pick(["10","192.168","172"]);
+    for(;;){
+      if(base==="10")ip=ipToInt("10."+rnd(256)+"."+rnd(256)+"."+rnd(256));
+      else if(base==="192.168")ip=ipToInt("192.168."+rnd(256)+"."+rnd(256));
+      else ip=ipToInt("172."+(16+rnd(16))+"."+rnd(256)+"."+rnd(256));
+      if(ip!==netOf(ip,p)&&ip!==bcOf(ip,p))break;
+    }
+    var n=netOf(ip,p),b=bcOf(ip,p);
+    return {ip:ip,p:p,ans:{mask:intToIp(maskOf(p)),net:intToIp(n),first:intToIp(n+1),last:intToIp(b-1),bc:intToIp(b),hosts:String(Math.pow(2,32-p)-2)}};
+  }
+  function next(){
+    cur=gen();checked=false;
+    $("#sub-q").textContent=intToIp(cur.ip)+"/"+cur.p;
+    F.forEach(function(f){var i=$("#sub-"+f);i.value="";i.className="";$("#sub-"+f+"-a").textContent=""});
+    clearFb("#sub-fb");
+  }
+  function norm(v){return v.replace(/\s+/g,"").replace(/^0+(\d)/,"$1").replace(/,/g,"")}
+  function working(){
+    var p=cur.p,idx=Math.floor(p/8),m=maskOf(p),mo=(m>>>(8*(3-idx)))&255,block=256-mo;
+    var oct=(cur.ip>>>(8*(3-idx)))&255,start=Math.floor(oct/block)*block;
+    var names=["1st","2nd","3rd","4th"];
+    var s="/"+p+" is "+cur.ans.mask+". The octet that isn't 255 or 0 is the "+names[idx]+" ("+mo+"), so the block size is 256 − "+mo+" = "+block+". ";
+    s+="Networks in that octet start at 0, "+block+", "+(block*2)+(block*3<256?", "+(block*3):"")+(block*4<256?" and so on":"")+". ";
+    s+="Your "+names[idx]+" octet is "+oct+", which sits in the block starting at "+start+". ";
+    s+="So the network is "+cur.ans.net+", the broadcast is the last address before the next block, "+cur.ans.bc+", and usable hosts are 2 to the power of "+(32-p)+", minus 2 = "+cur.ans.hosts+".";
+    return s;
+  }
+  $("#sub-check").addEventListener("click",function(){
+    var all=true,blank=false;
+    F.forEach(function(f){
+      var i=$("#sub-"+f),v=norm(i.value);if(!v)blank=true;
+      var ok=v===cur.ans[f];if(!ok)all=false;
+      i.className=ok?"ok":"no";$("#sub-"+f+"-a").textContent=ok?"":"Answer: "+cur.ans[f];
+    });
+    if(blank&&!all&&F.every(function(f){return !norm($("#sub-"+f).value)})){F.forEach(function(f){$("#sub-"+f).className="";$("#sub-"+f+"-a").textContent=""});fb("#sub-fb","info","Fill in the boxes first, or press Show the working.");return}
+    if(!checked){rec("subnet",all);checked=true}
+    fb("#sub-fb",all?"good":"bad","<strong>"+(all?"All six correct.":"Some answers are off. The right ones are under each box.")+"</strong><span>"+working()+"</span>");
+  });
+  $("#sub-show").addEventListener("click",function(){
+    if(!checked){rec("subnet",false);checked=true}
+    F.forEach(function(f){$("#sub-"+f+"-a").textContent="Answer: "+cur.ans[f]});
+    fb("#sub-fb","info","<strong>The working</strong><span>"+working()+"</span>");
+  });
+  $("#sub-next").addEventListener("click",next);
+  next();
+};
+
+/* ---------- 4. VLAN ports ---------- */
+MODS.vlan=function(){
+  var VN={1:"1 Management",10:"10 Staff",20:"20 Guest",30:"30 Cameras"};
+  var DEV=[
+    {name:"Gateway (uplink)",nat:1,tag:[10,20,30],why:"The uplink to the gateway carries every network: Management untagged, and 10, 20 and 30 tagged. Miss one and that whole network gets no addresses."},
+    {name:"Access point",nat:1,tag:[10,20],why:"The access point is managed on VLAN 1 untagged, and carries Staff (10) and Guest (20) Wi-Fi tagged. Only carry the networks a device needs."},
+    {name:"Staff laptop",nat:10,tag:[],why:"A laptop goes on Staff, VLAN 10, untagged. Laptops don't read VLAN tags."},
+    {name:"Office printer",nat:10,tag:[],why:"The printer serves staff, so VLAN 10 untagged."},
+    {name:"Guest kiosk PC",nat:20,tag:[],why:"Guests go on VLAN 20 untagged: internet, but no way into staff or cameras."},
+    {name:"Camera (front door)",nat:30,tag:[],why:"Cameras go on VLAN 30 untagged, away from staff and guests, with no internet."},
+    {name:"Camera (car park)",nat:30,tag:[],why:"Cameras go on VLAN 30 untagged, away from staff and guests, with no internet."},
+    {name:"NVR (recorder)",nat:30,tag:[],why:"The NVR records the cameras, so it sits with them on VLAN 30 untagged."}
+  ];
+  var ports,checked;
+  function next(){
+    ports=shuffle(DEV);checked=false;
+    $("#vlan-rows").innerHTML=ports.map(function(d,i){
+      return '<tr><td class="num">'+(i+1)+'</td><td class="dev">'+esc(d.name)+'</td><td><select id="vlan-nat-'+i+'" aria-label="Port '+(i+1)+' untagged VLAN">'+[1,10,20,30].map(function(v){return '<option value="'+v+'">'+VN[v]+'</option>'}).join("")+'</select></td><td><div class="tags">'+[10,20,30].map(function(v){return '<label><input type="checkbox" id="vlan-t'+v+'-'+i+'" value="'+v+'">'+v+'</label>'}).join("")+'</div></td><td class="res" id="vlan-res-'+i+'"></td></tr>';
+    }).join("");
+    clearFb("#vlan-fb");
+  }
+  $("#vlan-check").addEventListener("click",function(){
+    var good=0;
+    ports.forEach(function(d,i){
+      var nat=+$("#vlan-nat-"+i).value,tags=[10,20,30].filter(function(v){return $("#vlan-t"+v+"-"+i).checked});
+      var ok=nat===d.nat&&tags.length===d.tag.length&&tags.every(function(v){return d.tag.indexOf(v)>=0});
+      var cell=$("#vlan-res-"+i);
+      if(ok){good++;cell.className="res ok";cell.textContent="Correct"}
+      else{
+        var extra=tags.indexOf(nat)>=0?" Don't tag the same VLAN that is already untagged.":"";
+        cell.className="res no";cell.textContent=d.why+extra;
+      }
+    });
+    var all=good===ports.length;
+    if(!checked){rec("vlan",all);checked=true}
+    fb("#vlan-fb",all?"good":"bad","<strong>"+(all?"All 8 ports correct.":good+" of 8 ports correct.")+"</strong><span>"+(all?"Press New switch for a different layout.":"Fix the red ones and check again. A port on the wrong VLAN is one of the most common faults we see on site.")+"</span>");
+  });
+  $("#vlan-next").addEventListener("click",next);
+  next();
+};
+
+/* ---------- 5. Wi-Fi ---------- */
+MODS.wifi=function(){
+  var dbm,answered;
+  var PLACES=["Reception desk","Back office","Kitchen","Store room","Upstairs meeting room","Car park entrance","Manager's office","Pool bar"];
+  function cls(v){return v>=-67?"good":v>=-75?"ok":"poor"}
+  var LBL={good:"Good for work",ok:"Okay, browsing only",poor:"Poor"};
+  function sigNext(){
+    dbm=-(45+rnd(44));answered=false;
+    $("#sig-where").textContent="Wi-Fi analyser reading, "+pick(PLACES)+":";
+    $("#sig-q").textContent="−"+Math.abs(dbm)+" dBm";
+    document.querySelectorAll("[data-sig]").forEach(function(b){b.disabled=false});clearFb("#sig-fb");
+  }
+  document.querySelectorAll("[data-sig]").forEach(function(b){b.addEventListener("click",function(){
+    if(answered)return;answered=true;
+    var said=b.getAttribute("data-sig"),want=cls(dbm),ok=said===want;rec("wifi",ok);
+    document.querySelectorAll("[data-sig]").forEach(function(x){x.disabled=true});
+    fb("#sig-fb",ok?"good":"bad","<strong>"+(ok?"Right: ":"Not quite. It's ")+LBL[want]+".</strong><span>−67 dBm or stronger is good for work and calls. −68 to −75 is okay for browsing but calls may break up. Weaker than −75 is poor: move the access point or add another one.</span>");
+  })});
+  $("#sig-next").addEventListener("click",sigNext);
+
+  var site,checked;
+  function chNext(){
+    checked=false;
+    if(rnd(2)){site={aps:["AP Front","AP Middle","AP Back"],nb:null};$("#ch-brief").textContent="Three access points in one small office. Each one can hear the other two. Pick a 2.4 GHz channel for each."}
+    else{var nb=pick([1,6,11]);site={aps:["AP Bar","AP Lounge"],nb:nb};$("#ch-brief").textContent="Two access points that hear each other. The shop next door has strong Wi-Fi on channel "+nb+" that you can't change. Pick a channel for each of ours."}
+    var opts="";for(var c=1;c<=11;c++)opts+='<option value="'+c+'"'+(c===6?" selected":"")+'>Channel '+c+'</option>';
+    $("#ch-aps").innerHTML=site.aps.map(function(n,i){return '<div class="ap"><span class="n">'+n+'</span><label class="muted" for="wifi-ch-'+i+'">2.4 GHz channel</label><select id="wifi-ch-'+i+'">'+opts+'</select></div>'}).join("")+(site.nb?'<div class="ap nb"><span class="n">Next door</span><span class="muted">Fixed</span><span class="mono">Channel '+site.nb+'</span></div>':"");
+    clearFb("#ch-fb");
+  }
+  $("#ch-check").addEventListener("click",function(){
+    var ch=site.aps.map(function(_,i){return +$("#wifi-ch-"+i).value});
+    var clean=ch.every(function(c){return c===1||c===6||c===11});
+    var distinct=ch.every(function(c,i){return ch.indexOf(c)===i});
+    var avoid=!site.nb||ch.indexOf(site.nb)<0;
+    var ok=clean&&distinct&&avoid;
+    if(!checked){rec("wifi",ok);checked=true}
+    var msg=[];
+    if(!clean)msg.push("Use only 1, 6 or 11. Each 2.4 GHz channel is about 20 MHz wide but channels are only 5 MHz apart, so anything else overlaps its neighbours.");
+    if(!distinct)msg.push("Access points that hear each other need different channels.");
+    if(!avoid)msg.push("Stay off channel "+site.nb+": the neighbour's Wi-Fi is already there.");
+    var best=site.nb?[1,6,11].filter(function(c){return c!==site.nb}).join(" and "):"1, 6 and 11";
+    fb("#ch-fb",ok?"good":"bad","<strong>"+(ok?"Good plan.":"That plan will cause interference.")+"</strong><span>"+(ok?"No overlaps. On 5 GHz there are many more clean channels, which is why we push devices onto 5 GHz where we can.":msg.join(" ")+" A clean plan here: "+best+".")+"</span>");
+  });
+  $("#ch-next").addEventListener("click",chNext);
+  sigNext();chNext();
+};
+
+/* ---------- 6. fault finding ---------- */
+MODS.faults=function(){
+  var BANK=[
+    {s:"A staff laptop in a wall port shows no internet. The port light is on.",c:"Autoconfiguration IPv4 Address . . : 169.254.88.14\nDefault Gateway . . . . . . . . . : ",o:["The laptop isn't getting an address from DHCP","The DNS server is wrong","The Wi-Fi channel is crowded","The patch lead is broken"],w:"169.254 means nobody answered its DHCP request. The light is on, so the cable is probably fine.",f:"Check the switch port's VLAN, then that DHCP is on for that network."},
+    {s:"A desk PC has no network at all. The lights on the PC's port and the switch port are both off.",c:"Switch port 4: Link down",o:["A bad patch lead, cable or jack","Wrong DNS settings","A duplicate IP address","A firewall rule blocking it"],w:"No link light means nothing is getting through electrically. Settings can't turn off a link light.",f:"Swap the patch leads at both ends, then test the cable run."},
+    {s:"Guests can see the Guest Wi-Fi and join it, but never get online. Staff Wi-Fi works.",c:"Switch port 8 (access point)\n  Untagged: 1  Management\n  Tagged:   10 Staff",o:["VLAN 20 isn't tagged on the access point's port","The guest password is wrong","The access point needs more PoE power","DNS is wrong on the guest network"],w:"Guest Wi-Fi traffic leaves the access point tagged 20. The switch port only lets VLAN 10 through, so guests never reach the DHCP server.",f:"Add VLAN 20 as tagged on the access point's switch port."},
+    {s:"“The internet is down.” You try a ping by number and it works. Websites say “Server not found”.",c:"C:\\> ping 8.8.8.8\nReply from 8.8.8.8: bytes=32 time=21ms TTL=117\nC:\\> nslookup technovabb.com\nDNS request timed out.",o:["A DNS problem","A broken cable","No default gateway","The internet line is down"],w:"Replies from 8.8.8.8 prove the cable, address, gateway and internet line all work. Only name lookups fail, so it's DNS.",f:"Check the DNS servers on the device, or in the gateway's DHCP settings."},
+    {s:"You added a fourth camera. Now one camera shows offline on the NVR. Its port light is on, but the camera's own light is dark.",c:"PoE budget: 59.1 W of 60 W used\nPort 7: PoE denied (over budget)",o:["The switch has run out of PoE power","The camera is on the wrong VLAN","The NVR's disk is full","The camera's password changed"],w:"The camera gets its power from the switch. The switch has hit its PoE limit, so it refused power to that port.",f:"Check the PoE budget. Move a device to another PoE source or fit a bigger PoE switch."},
+    {s:"Two office PCs keep dropping off the network for a few seconds at a time. Windows shows a warning on both.",c:"Windows has detected an IP address conflict.\nPC 1: 10.10.10.50 (static)\nPC 2: 10.10.10.50 (static)",o:["Two devices have the same IP address","The switch is faulty","The Wi-Fi signal is weak","DNS is wrong"],w:"Two devices with the same address fight over it, and each drops off in turn.",f:"Put one back on DHCP, or give it a DHCP reservation instead of a static address."},
+    {s:"A new printer was set up with a static address. Nobody can print to it.",c:"Printer:        192.168.0.100  255.255.255.0\nStaff network:  10.10.10.0/24",o:["The printer is on a different network from the staff","The printer needs a firmware update","The printer cable is too long","Too many people are printing"],w:"Staff are on 10.10.10.0/24 but the printer is on 192.168.0.x, so they can't reach it.",f:"Give the printer an address on 10.10.10.0/24, ideally as a DHCP reservation."},
+    {s:"Staff Wi-Fi works at the front desk but crawls in the back office.",c:"Wi-Fi analyser, back office:\n  Lab-Staff   -79 dBm   channel 36",o:["The signal is too weak there","DNS is wrong","The access point is on the wrong VLAN","The laptop has a duplicate address"],w:"−79 dBm is a poor signal. Devices slow right down to hold the connection. Weaker than about −75 dBm, expect trouble.",f:"Move the access point closer or add a second one for the back office."},
+    {s:"The whole office suddenly lost internet. Earlier, someone plugged their own router into a spare wall port.",c:"Staff laptop:\n  IPv4 Address . . . : 192.168.0.23\n  Default Gateway  . : 192.168.0.1\nThis office should be on 10.10.10.0/24",o:["The extra router is handing out its own addresses (a rogue DHCP server)","The internet provider is down","The switch needs a firmware update","The Wi-Fi password changed"],w:"The plugged-in router answers DHCP faster than ours, so laptops take its addresses and its gateway, which goes nowhere. It's why our training gear never goes on a live network.",f:"Find and unplug the extra router, then renew the laptops' addresses with ipconfig /renew."},
+    {s:"A laptop on a staff desk port gets an address but can't reach the printer or the internet.",c:"IPv4 Address . . . : 10.10.30.41\nDefault Gateway  . : 10.10.30.1",o:["The desk port is set to the Cameras VLAN","The laptop needs a new network driver","The printer is switched off","The DNS server is down"],w:"A 10.10.30.x address means the port is on VLAN 30, Cameras, which has no internet and can't reach staff devices.",f:"Set that switch port's untagged VLAN to 10, Staff."},
+    {s:"Everything inside the office works: printing, cameras, file sharing. Nothing reaches the internet.",c:"Gateway status\n  WAN: Disconnected\n  LAN: OK",o:["The internet line or modem is down","Every PC has the wrong DNS","The switch has failed","A VLAN is set wrong"],w:"Inside traffic works, so the switch and VLANs are fine. The gateway itself says its internet side (WAN) is down.",f:"Check the lights on the provider's modem or fibre box and the WAN cable, then call the provider."},
+    {s:"A new cable run passes the simple tester, but the PC only connects at 100 Mb instead of 1 Gb. The certifier fails it.",c:"Certifier result: FAIL (NEXT)\nWire map:        PASS",o:["A split pair or a poor termination","The PC is on the wrong VLAN","The switch port has no PoE","DNS is wrong"],w:"The wires reach the right pins, so the wire map passes. But pairs are split or untwisted too far, so signal leaks between pairs (NEXT).",f:"Re-terminate both ends, keeping the twists right up to the jack, then certify again."},
+    {s:"2.4 GHz Wi-Fi is patchy across the office, even right next to the access points.",c:"Wi-Fi scan, 2.4 GHz:\n  AP-Front   channel 1\n  AP-Middle  channel 3\n  AP-Back    channel 6",o:["The access points' channels overlap","The signal is too strong","DHCP is off","The Guest VLAN is missing"],w:"Channel 3 overlaps both 1 and 6, so the access points interfere with each other. On 2.4 GHz only 1, 6 and 11 don't overlap.",f:"Set the access points to 1, 6 and 11."}
+  ];
+  var order=shuffle(BANK.map(function(_,i){return i})),pos=-1,cur,map,answered;
+  function next(){
+    pos=(pos+1)%order.length;if(pos===0&&cur)order=shuffle(order);
+    cur=BANK[order[pos]];answered=false;
+    map=shuffle([0,1,2,3]);
+    $("#flt-count").textContent="Call-out "+(pos+1)+" of "+BANK.length;
+    $("#flt-sym").textContent=cur.s;$("#flt-clue").textContent=cur.c;
+    $("#flt-opts").innerHTML=map.map(function(k){return '<button type="button" class="opt" data-k="'+k+'">'+esc(cur.o[k])+'</button>'}).join("");
+    clearFb("#flt-fb");
+  }
+  $("#flt-opts").addEventListener("click",function(e){
+    var b=e.target.closest("[data-k]");if(!b||answered)return;answered=true;
+    var k=+b.getAttribute("data-k"),ok=k===0;rec("faults",ok);
+    document.querySelectorAll("#flt-opts .opt").forEach(function(x){x.disabled=true;var kk=+x.getAttribute("data-k");if(kk===0)x.classList.add("right");else if(kk===k)x.classList.add("wrong")});
+    fb("#flt-fb",ok?"good":"bad","<strong>"+(ok?"Right.":"Not quite. It's: "+esc(cur.o[0])+".")+"</strong><span>"+esc(cur.w)+"</span><span><strong>First check:</strong> "+esc(cur.f)+"</span>");
+  });
+  $("#flt-next").addEventListener("click",next);
+  next();
+};
+
+
+
+renderGuides();
+route(false);
+
+})();
+</script>
+</body>
+</html>
